@@ -26,7 +26,7 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
-    install_requires=["peppercorn"],
+    install_requires=["pygame"],
     extras_require={
         "dev": ["check-manifest"],
         "test": ["coverage"],

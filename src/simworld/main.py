@@ -1,5 +1,8 @@
-def add_one(number):
-    return number + 1
+import pygame as pg
+from simworld.scenes.introduction import Introduction
 
-def start():
-    pass
+def start_game():
+    pg.init()
+    pg.display.set_mode((800, 600))
+    Introduction(pg)
+    

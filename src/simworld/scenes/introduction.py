@@ -40,7 +40,3 @@ class Introduction():
             self.surface.blit(ball, ballrect)
             clock.tick(60)
             pg.display.flip()
-
-if __name__ == '__main__':
-    intro = Introduction(pathlib.Path(__file__).parent.parent / "introduction_assets")
-    intro.run()

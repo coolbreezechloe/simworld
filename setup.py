@@ -36,7 +36,7 @@ setup(
     },    
     entry_points={  # Optional
         "console_scripts": [
-            "simworld=simworld:entrypoint",
+            "simworld=simworld.main:start_game",
         ],
     },    
 )

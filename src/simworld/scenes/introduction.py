@@ -1,5 +1,6 @@
 import pathlib
 import pygame as pg
+from pygame.time import Clock
 import sys
 
 
@@ -23,6 +24,7 @@ class Introduction():
 
         ball = pg.image.load(self.image)
         ballrect = ball.get_rect()
+        clock = Clock()
 
         while True:
             for event in pg.event.get():
@@ -36,6 +38,7 @@ class Introduction():
 
             self.surface.fill(black)
             self.surface.blit(ball, ballrect)
+            clock.tick(60)
             pg.display.flip()
 
 if __name__ == '__main__':

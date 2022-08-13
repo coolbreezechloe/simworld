@@ -28,27 +28,12 @@ setup(
     python_requires=">=3.7, <4",
     install_requires=["pygame"],
     extras_require={
-        "dev": ["check-manifest"],
+        "dev": ["coverage"],
         "test": ["coverage"],
-    },
-    # If there are data files included in your packages that need to be
-    # installed, specify them here.
-    package_data={  # Optional
-        "sample": ["package_data.dat"],
-    },
-    # Although 'package_data' is the preferred approach, in some case you may
-    # need to place data files outside of your packages. See:
-    # http://docs.python.org/distutils/setupscript.html#installing-additional-files
-    #
-    # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    data_files=[("my_data", ["data/data_file"])],  # Optional
-    # To provide executable scripts, use entry points in preference to the
-    # "scripts" keyword. Entry points provide cross-platform support and allow
-    # `pip` to create the appropriate form of executable for the target
-    # platform.
-    #
-    # For example, the following would provide a command called `sample` which
-    # executes the function `main` from this package when invoked:
+    },    
+    package_data={
+        "simworld": ["images/*"],
+    },    
     entry_points={  # Optional
         "console_scripts": [
             "simworld=simworld:entrypoint",

@@ -1,6 +1,8 @@
+import pathlib
 from simworld.scenes.introduction import Introduction
 
 def start_game():
-    intro = Introduction("src\simworld\intro_ball.gif")
+    here = pathlib.Path(__file__).parent.resolve()
+    intro = Introduction(here / "images" / "intro_ball.gif")
     intro.run()
     

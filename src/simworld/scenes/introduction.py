@@ -1,10 +1,11 @@
+import pathlib
 import pygame as pg
 import sys
 
 
 class Introduction():
-    def __init__(self, image: str):
-        self.image = image
+    def __init__(self, assets: pathlib.Path):
+        self.image = assets / "intro_ball.gif"
         self.width = 800
         self.height = 600
         self._setup_pygame()
@@ -37,3 +38,6 @@ class Introduction():
             self.surface.blit(ball, ballrect)
             pg.display.flip()
 
+if __name__ == '__main__':
+    intro = Introduction(pathlib.Path(__file__).parent.parent / "introduction_assets")
+    intro.run()

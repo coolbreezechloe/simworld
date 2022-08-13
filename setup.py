@@ -32,7 +32,7 @@ setup(
         "test": ["coverage"],
     },    
     package_data={
-        "simworld": ["images/*"],
+        "simworld": ["introduction_assets/*"],
     },    
     entry_points={  # Optional
         "console_scripts": [

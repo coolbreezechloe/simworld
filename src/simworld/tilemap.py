@@ -62,7 +62,7 @@ def split_tiles(tilemap: Surface, tile_width: int, tile_height: int) -> TileSet:
     t = TileSet(tiles, tile_width, tile_height, cols, rows)
     return t
 
-def main():
+def show_all():
     from simworld.tilemapbrowser import TileMapBrowser
     for _, tilemap in get_tilemaps().items():
         t = TileMapBrowser(tilemap)
@@ -70,4 +70,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    show_all()

@@ -1,12 +1,13 @@
+import sys
 import pathlib
 import pygame as pg
 from pygame.time import Clock
-import sys
 
 
 class Introduction():
     def __init__(self, assets: pathlib.Path):
-        self.image = assets / "intro_ball.gif"
+        self.intro_image = assets / "intro_ball.gif"
+        self.assets = assets
         self.width = 800
         self.height = 600
         self._setup_pygame()
@@ -18,7 +19,7 @@ class Introduction():
         print(f"created surface: {surface}")
         self.surface = surface
 
-    def run(self):        
+    def run(self):
         speed = [2, 2]
         black = 0, 0, 0
 

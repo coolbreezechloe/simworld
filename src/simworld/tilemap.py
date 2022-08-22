@@ -3,7 +3,7 @@ import pathlib
 import pygame as pg
 from pygame import Surface
 
-TileMapName = str
+TileSetName = str
 Row = int
 Column = int
 Tile = Surface
@@ -28,7 +28,7 @@ class TileSet():
         row = (index // self.cols) - 1
         return self.tiles[(column, row)]
 
-def get_tilemaps() -> dict[TileMapName, TileSet]:
+def get_tilesets() -> dict[TileSetName, TileSet]:
     """Returns a dictionary which maps png files to their data
     
     The function searches the directory this file is in for all PNG
@@ -64,7 +64,7 @@ def split_tiles(tilemap: Surface, tile_width: int, tile_height: int) -> TileSet:
 
 def show_all():
     from simworld.tilemapbrowser import TileMapBrowser
-    for _, tilemap in get_tilemaps().items():
+    for _, tilemap in get_tilesets().items():
         t = TileMapBrowser(tilemap)
         t.run()
 

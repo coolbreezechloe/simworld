@@ -24,8 +24,8 @@ class TileSet():
         if index < 1 or index > len(self.tiles):
             raise ValueError(f"Index of {index} is out of bounds (1-{len(self.tiles)})")
         
-        column = (index % self.cols) - 1
-        row = (index // self.cols) - 1
+        column = ((index - 1) % self.cols)
+        row = ((index - 1) // self.cols)
         return self.tiles[(column, row)]
 
 def get_tilesets() -> dict[TileSetName, TileSet]:

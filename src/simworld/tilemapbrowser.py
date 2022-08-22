@@ -1,6 +1,4 @@
-import random
 import sys
-import math
 import pygame as pg
 from pygame.time import Clock
 

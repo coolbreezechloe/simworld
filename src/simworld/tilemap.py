@@ -3,7 +3,6 @@ import pathlib
 import pygame as pg
 from pygame import Surface
 
-TileSetName = str
 Row = int
 Column = int
 Tile = Surface
@@ -17,9 +16,16 @@ class TileSet():
     tile_height: int
     cols: int
     rows: int
+    name: str
 
     def get_tile_by_index(self, index: int) -> Tile:
-        """Index into the complete set of tiles using a single 1-based interger value"""
+        """Get a tile from the complete set of tiles using a 1-based index
+        
+        For example if the source file contained 100 tiles (perhaps arranged
+        into 10 rows of 10) then you could access them by counting left-to-right
+        and top-to-bottom. This is an alternative to selecting a tile by its
+        location using something like tiles[(col, row)]
+        """
 
         if index < 1 or index > len(self.tiles):
             raise ValueError(f"Index of {index} is out of bounds (1-{len(self.tiles)})")
@@ -28,7 +34,7 @@ class TileSet():
         row = ((index - 1) // self.cols)
         return self.tiles[(column, row)]
 
-def get_tilesets() -> dict[TileSetName, TileSet]:
+def get_tilesets() -> list[TileSet]:
     """Returns a dictionary which maps png files to their data
     
     The function searches the directory this file is in for all PNG
@@ -47,19 +53,27 @@ def get_tilesets() -> dict[TileSetName, TileSet]:
     for p in pathlib.Path(__file__).parent.glob('*.png'):
         name, size = p.name.split('-')
         width, height = [int(x) for x in size.strip('.png').split('x')]
-        tilemaps[name] = split_tiles(pg.image.load(p), width, height)        
+        tilemaps[name] = split_tiles(pg.image.load(p), width, height, name)        
     return tilemaps    
 
-def split_tiles(tilemap: Surface, tile_width: int, tile_height: int) -> TileSet:
-    """Given a Surface and a tile size it will split the surface into a subsurfaces for each tile"""
+def split_tiles(tilemap: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:
+    """Split a surface into subsurfaces for each tile in the set
+    
+    This function assumes you have one large surface which is a representation
+    of a grid of small tiles that you want to be able to address individually.
+    This function will take the original surface along with the tile size and
+    a name for the tileset and parse the image into a series of subsurfaces 
+    indexed by their location (column, row) in the source image.
+    """
     tiles = dict()
     width, height = tilemap.get_size()
     rows = int(height / tile_height)
     cols = int(width / tile_width)    
     for c in range(cols):
         for r in range(rows):
-            tiles[(c, r)] = tilemap.subsurface(c*tile_width, r*tile_height, tile_width, tile_height)
-    t = TileSet(tiles, tile_width, tile_height, cols, rows)
+            tiles[(c, r)] = tilemap.subsurface(
+                c*tile_width, r*tile_height, tile_width, tile_height)
+    t = TileSet(tiles, tile_width, tile_height, cols, rows, name)
     return t
 
 def show_all():

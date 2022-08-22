@@ -16,6 +16,7 @@ class TileMapBrowser():
         print(f"pg.init() returned {r}")
         surface = pg.display.set_mode((self.width, self.height), flags=pg.RESIZABLE | pg.SCALED)
         print(f"created surface: {surface}")
+        pg.display.set_caption(self.tilemap.name)
         self.surface = surface    
 
     def run(self): 
@@ -34,5 +35,3 @@ class TileMapBrowser():
                     self.surface.blit(tile, rec)
             clock.tick(60)
             pg.display.flip()
-                            
-    

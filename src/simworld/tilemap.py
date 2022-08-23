@@ -49,12 +49,13 @@ def get_tilesets() -> list[TileSet]:
     corresponding to the NNNN part of the file. In this map the keys are
     a TileMap representing the data in the file.
     """
-    tilemaps = dict()
+    result = list()
     for p in pathlib.Path(__file__).parent.glob('*.png'):
         name, size = p.name.split('-')
         width, height = [int(x) for x in size.strip('.png').split('x')]
-        tilemaps[name] = split_tiles(pg.image.load(p), width, height, name)        
-    return tilemaps    
+        t = split_tiles(pg.image.load(p), width, height, name)
+        result.append(t)
+    return result
 
 def split_tiles(tilemap: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:
     """Split a surface into subsurfaces for each tile in the set
@@ -76,12 +77,3 @@ def split_tiles(tilemap: Surface, tile_width: int, tile_height: int, name: str) 
     t = TileSet(tiles, tile_width, tile_height, cols, rows, name)
     return t
 
-def show_all():
-    from simworld.tilemapbrowser import TileMapBrowser
-    for _, tilemap in get_tilesets().items():
-        t = TileMapBrowser(tilemap)
-        t.run()
-
-
-if __name__ == '__main__':
-    show_all()

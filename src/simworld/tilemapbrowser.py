@@ -2,7 +2,7 @@ import sys
 import pygame as pg
 from pygame.time import Clock
 
-from simworld.tilemap import TileSet, get_tilesets
+from simworld.tileset import TileSet, get_tilesets
 
 class TileSetBrowser():
     def __init__(self, tileset: TileSet):

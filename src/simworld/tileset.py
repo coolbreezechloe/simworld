@@ -45,9 +45,9 @@ def get_tilesets() -> list[TileSet]:
     Where NNNN is the name of the image, WWW and HHH are the width and
     height of the individual tiles (in pixels) contained in the image.
 
-    The function will return a map with the keys being TileMapName values
-    corresponding to the NNNN part of the file. In this map the keys are
-    a TileMap representing the data in the file.
+    The function will return a list of all such files found in the folder
+    in the form of TileSet entries which will include relevant details like
+    the source file name, the images themselves, and the size of the images.
     """
     result = list()
     for p in pathlib.Path(__file__).parent.glob('*.png'):
@@ -57,7 +57,7 @@ def get_tilesets() -> list[TileSet]:
         result.append(t)
     return result
 
-def split_tiles(tilemap: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:
+def split_tiles(tileset: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:
     """Split a surface into subsurfaces for each tile in the set
     
     This function assumes you have one large surface which is a representation
@@ -67,12 +67,12 @@ def split_tiles(tilemap: Surface, tile_width: int, tile_height: int, name: str) 
     indexed by their location (column, row) in the source image.
     """
     tiles = dict()
-    width, height = tilemap.get_size()
+    width, height = tileset.get_size()
     rows = int(height / tile_height)
     cols = int(width / tile_width)    
     for c in range(cols):
         for r in range(rows):
-            tiles[(c, r)] = tilemap.subsurface(
+            tiles[(c, r)] = tileset.subsurface(
                 c*tile_width, r*tile_height, tile_width, tile_height)
     t = TileSet(tiles, tile_width, tile_height, cols, rows, name)
     return t

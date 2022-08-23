@@ -1,6 +1,3 @@
-import pathlib
-from simworld.tilemap import show_all
-
 def start_game():
     print("Welcome to the game")
     

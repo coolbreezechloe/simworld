@@ -99,10 +99,10 @@ class TileSetBrowser():
                 self.surface.blit(tile, rec)
                 if r == self.selected_row and c == self.selected_col:
                     rec2 = tile.get_rect().move([int(self.view_width*self.tileset.tile_width + self.tileset.tile_width), 0])
-                    tile2 = pg.transform.smoothscale(tile, (rec.width*2, rec.height*2))
+                    tile2 = pg.transform.scale(tile, (rec.width*2, rec.height*2))
                     self.surface.blit(tile2, rec2)
                     rec4 = rec2.move([int(self.tileset.tile_width * 2 + self.tileset.tile_width), 0])
-                    tile4 = pg.transform.smoothscale(tile, (rec.width*4, rec.height*4))
+                    tile4 = pg.transform.scale(tile, (rec.width*4, rec.height*4))
                     self.surface.blit(tile4, rec4)
         x0 = int(self.selected_col * self.tileset.tile_width)
         y0 = int(self.selected_row * self.tileset.tile_height)

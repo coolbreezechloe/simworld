@@ -16,10 +16,10 @@ class TileSetBrowser():
 
     def _setup_pygame(self):
         r = pg.init()
-        log.info(f"pg.init() returned {r}")
+        log.debug(f"pg.init() returned {r}")
         surface = pg.display.set_mode((self.width, self.height))
-        log.info(f"created surface: {surface}")
-        pg.display.set_caption(self.tileset.name)
+        log.debug(f"created surface: {surface}")
+        pg.display.set_caption(f"TileSet Browser : {self.tileset.name}")
         self.surface = surface
 
     def _setup_state(self):
@@ -47,14 +47,18 @@ class TileSetBrowser():
                     self._handle_keydown(event.key)
 
     def _handle_keydown(self, key) -> None:
-        if key == pg.K_LEFT and self.view_x > 0:
-            self.view_x = self.view_x - 1
-        elif key == pg.K_RIGHT and self.view_x < self.tileset.cols - self.view_width:
-            self.view_x = self.view_x + 1
-        elif key == pg.K_UP and self.view_y > 0:
-            self.view_y = self.view_y - 1
-        elif key == pg.K_DOWN and self.view_y < self.tileset.rows - self.view_height:
-            self.view_y = self.view_y + 1
+        if key == pg.K_LEFT or key == pg.K_a:
+            if self.view_x > 0:
+                self.view_x = self.view_x - 1
+        elif key == pg.K_RIGHT or key == pg.K_d:
+            if self.view_x < self.tileset.cols - self.view_width:
+                self.view_x = self.view_x + 1
+        elif key == pg.K_UP or key == pg.K_w:
+            if self.view_y > 0:
+                self.view_y = self.view_y - 1
+        elif key == pg.K_DOWN or key == pg.K_s:
+            if self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
         elif key == pg.K_ESCAPE:
             self.view_x = 0
             self.view_y = 0
@@ -81,8 +85,8 @@ class TileSetBrowser():
         clock = Clock()
         while self.quit is False:
             self._update_screen()
-            clock.tick(60)
             pg.display.flip()
+            clock.tick(60)
             self._handle_events()
         log.debug('Quitting')
 

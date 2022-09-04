@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Module",
+            "name": "SimWorld : Tile Set Browser",
             "type": "python",
             "request": "launch",
             "module": "simworld.tile_set_browser",

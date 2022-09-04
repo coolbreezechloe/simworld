@@ -94,4 +94,6 @@ def show_all():
 
 
 if __name__ == '__main__':
+    log = logging.getLogger()
+    log.setLevel(logging.DEBUG)
     show_all()

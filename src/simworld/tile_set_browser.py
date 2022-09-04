@@ -1,4 +1,5 @@
 import pygame as pg
+import pygame.freetype
 from pygame.time import Clock
 import logging
 
@@ -15,6 +16,7 @@ class TileSetBrowser():
         self._setup_state()
 
     def _setup_pygame(self):
+        pygame.freetype.init()
         r = pg.init()
         log.debug(f"pg.init() returned {r}")
         surface = pg.display.set_mode((self.width, self.height))
@@ -30,6 +32,7 @@ class TileSetBrowser():
         self.view_y_delta = 0
         self.view_width = 10
         self.view_height = 10
+        self.selected_tile = None
         self.selected_col = self.view_width // 2
         self.selected_row = self.view_height // 2
 
@@ -98,6 +101,7 @@ class TileSetBrowser():
                 rec = rec.move([int(c*self.tileset.tile_width), int(r*self.tileset.tile_height)])
                 self.surface.blit(tile, rec)
                 if r == self.selected_row and c == self.selected_col:
+                    self.selected_tile = (self.view_x + self.selected_col, self.view_y + self.selected_row)
                     rec2 = tile.get_rect().move([int(self.view_width*self.tileset.tile_width + self.tileset.tile_width), 0])
                     tile2 = pg.transform.scale(tile, (rec.width*2, rec.height*2))
                     self.surface.blit(tile2, rec2)
@@ -107,6 +111,12 @@ class TileSetBrowser():
         x0 = int(self.selected_col * self.tileset.tile_width)
         y0 = int(self.selected_row * self.tileset.tile_height)
         pg.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)
+        font = pygame.freetype.Font(None, size=25)
+        if self.selected_tile:
+            font.render_to(self.surface,
+            (self.tileset.tile_width*self.view_width + self.tileset.tile_width, self.tileset.tile_height*self.view_height + self.tileset.tile_height),
+            f"Selected Tile = {self.selected_tile}",
+            fgcolor=_white)
 
     def run(self):
         clock = Clock()

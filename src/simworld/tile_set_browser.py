@@ -18,7 +18,7 @@ class TileSetBrowser():
     def _setup_pygame(self):
         r = pg.init()
         log.info(f"pg.init() returned {r}")
-        surface = pg.display.set_mode((self.width, self.height), flags=pg.RESIZABLE | pg.SCALED)
+        surface = pg.display.set_mode((self.width, self.height))
         log.info(f"created surface: {surface}")
         pg.display.set_caption(self.tileset.name)
         self.surface = surface
@@ -34,18 +34,20 @@ class TileSetBrowser():
         self.selected_col = self.view_width // 2
         self.selected_row = self.view_height // 2
 
-    def _handle_events(self):
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                log.debug("Quitting")
-                sys.exit()
-            elif event.type == pg.KEYDOWN:
-                log.debug(f"keydown = {event.key}")
-                self._handle_keydown(event.key)
-            else:
-                log.debug(f"other event = {event}")
+    def _handle_events(self) -> None:
+        while not self.quit:
+            events = pg.event.get()
+            if not events:
+                return
+            for event in events:
+                log.debug(f'next event is {event}')
+                if event.type == pg.QUIT:
+                    self.quit = True
+                    break
+                elif event.type == pg.KEYDOWN:
+                    self._handle_keydown(event.key)
 
-    def _handle_keydown(self, key):
+    def _handle_keydown(self, key) -> None:
         if key == pg.K_LEFT and self.view_x > 0:
             self.view_x = self.view_x - 1
         elif key == pg.K_RIGHT and self.view_x < self.tileset.cols - self.view_width:
@@ -59,8 +61,6 @@ class TileSetBrowser():
             self.view_y = 0
         elif key == pg.K_q:
             self.quit = True
-        else:
-            log.debug(f"Unhandled key = {key}")
 
     def _update_screen(self):
         _black = (0, 0, 0)
@@ -82,10 +82,11 @@ class TileSetBrowser():
     def run(self):
         clock = Clock()
         while self.quit is False:
-            self._handle_events()
             self._update_screen()
             clock.tick(60)
             pg.display.flip()
+            self._handle_events()
+        log.debug('Quitting')
 
 def show_all():
     for tileset in get_tilesets():
@@ -94,6 +95,5 @@ def show_all():
 
 
 if __name__ == '__main__':
-    log = logging.getLogger()
-    log.setLevel(logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     show_all()

@@ -29,10 +29,10 @@ class TileSetBrowser():
         self.view_x_delta = 0
         self.view_y = 0
         self.view_y_delta = 0
-        self.view_width = 5
-        self.view_height = 5
-        self.selected_col = 2
-        self.selected_row = 2
+        self.view_width = 10
+        self.view_height = 10
+        self.selected_col = self.view_width // 2
+        self.selected_row = self.view_height // 2
 
     def _handle_events(self):
         for event in pg.event.get():
@@ -77,7 +77,7 @@ class TileSetBrowser():
         x0 = int(self.selected_col * self.tileset.tile_width)
         y0 = int(self.selected_row * self.tileset.tile_height)
         pg.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)
-        
+
 
     def run(self):
         clock = Clock()

@@ -59,9 +59,29 @@ class TileSetBrowser():
         elif key == pg.K_DOWN or key == pg.K_s:
             if self.view_y < self.tileset.rows - self.view_height:
                 self.view_y = self.view_y + 1
-        elif key == pg.K_ESCAPE:
+        elif key == pg.K_g:
             self.view_x = 0
             self.view_y = 0
+        elif key == pg.K_j:
+            if self.selected_row < self.view_height - 1:
+                self.selected_row = self.selected_row + 1
+            elif self.selected_row == self.view_height - 1 and self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
+        elif key == pg.K_k:
+            if self.selected_row > 0:
+                self.selected_row = self.selected_row - 1
+            elif self.selected_row == 0 and self.view_y > 0:
+                self.view_y = self.view_y - 1
+        elif key == pg.K_l:
+            if self.selected_col < self.view_width - 1:
+                self.selected_col = self.selected_col + 1
+            elif self.selected_col == self.view_width - 1 and self.view_x < self.tileset.cols - self.view_width:
+                self.view_x = self.view_x + 1
+        elif key == pg.K_h:
+            if self.selected_col > 0:
+                self.selected_col = self.selected_col - 1
+            elif self.selected_col == 0 and self.view_x > 0:
+                self.view_x = self.view_x - 1
         elif key == pg.K_q:
             self.quit = True
 
@@ -77,6 +97,13 @@ class TileSetBrowser():
                 rec = tile.get_rect()
                 rec = rec.move([int(c*self.tileset.tile_width), int(r*self.tileset.tile_height)])
                 self.surface.blit(tile, rec)
+                if r == self.selected_row and c == self.selected_col:
+                    rec2 = tile.get_rect().move([int(self.view_width*self.tileset.tile_width + self.tileset.tile_width), 0])
+                    tile2 = pg.transform.smoothscale(tile, (rec.width*2, rec.height*2))
+                    self.surface.blit(tile2, rec2)
+                    rec4 = rec2.move([int(self.tileset.tile_width * 2 + self.tileset.tile_width), 0])
+                    tile4 = pg.transform.smoothscale(tile, (rec.width*4, rec.height*4))
+                    self.surface.blit(tile4, rec4)
         x0 = int(self.selected_col * self.tileset.tile_width)
         y0 = int(self.selected_row * self.tileset.tile_height)
         pg.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)

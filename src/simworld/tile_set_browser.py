@@ -1,4 +1,3 @@
-import sys
 import pygame as pg
 from pygame.time import Clock
 import logging
@@ -78,7 +77,6 @@ class TileSetBrowser():
         y0 = int(self.selected_row * self.tileset.tile_height)
         pg.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)
 
-
     def run(self):
         clock = Clock()
         while self.quit is False:
@@ -87,6 +85,7 @@ class TileSetBrowser():
             pg.display.flip()
             self._handle_events()
         log.debug('Quitting')
+
 
 def show_all():
     for tileset in get_tilesets():

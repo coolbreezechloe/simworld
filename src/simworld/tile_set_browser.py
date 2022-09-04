@@ -1,4 +1,4 @@
-import pygame as pg
+import pygame
 import pygame.freetype
 from pygame.time import Clock
 import logging
@@ -17,11 +17,11 @@ class TileSetBrowser():
 
     def _setup_pygame(self):
         pygame.freetype.init()
-        r = pg.init()
-        log.debug(f"pg.init() returned {r}")
-        surface = pg.display.set_mode((self.width, self.height))
+        r = pygame.init()
+        log.debug(f"pygame.init() returned {r}")
+        surface = pygame.display.set_mode((self.width, self.height))
         log.debug(f"created surface: {surface}")
-        pg.display.set_caption(f"TileSet Browser : {self.tileset.name}")
+        pygame.display.set_caption(f"TileSet Browser : {self.tileset.name}")
         self.surface = surface
 
     def _setup_state(self):
@@ -38,54 +38,56 @@ class TileSetBrowser():
 
     def _handle_events(self) -> None:
         while not self.quit:
-            events = pg.event.get()
+            events = pygame.event.get()
             if not events:
                 return
             for event in events:
                 log.debug(f'next event is {event}')
-                if event.type == pg.QUIT:
+                if event.type == pygame.QUIT:
                     self.quit = True
                     break
-                elif event.type == pg.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     self._handle_keydown(event.key)
 
     def _handle_keydown(self, key) -> None:
-        if key == pg.K_LEFT or key == pg.K_a:
+        if key == pygame.K_LEFT or key == pygame.K_a:
             if self.view_x > 0:
                 self.view_x = self.view_x - 1
-        elif key == pg.K_RIGHT or key == pg.K_d:
+        elif key == pygame.K_RIGHT or key == pygame.K_d:
             if self.view_x < self.tileset.cols - self.view_width:
                 self.view_x = self.view_x + 1
-        elif key == pg.K_UP or key == pg.K_w:
+        elif key == pygame.K_UP or key == pygame.K_w:
             if self.view_y > 0:
                 self.view_y = self.view_y - 1
-        elif key == pg.K_DOWN or key == pg.K_s:
+        elif key == pygame.K_DOWN or key == pygame.K_s:
             if self.view_y < self.tileset.rows - self.view_height:
                 self.view_y = self.view_y + 1
-        elif key == pg.K_g:
+        elif key == pygame.K_g:
             self.view_x = 0
             self.view_y = 0
-        elif key == pg.K_j:
+            self.selected_row = 0
+            self.selected_col = 0
+        elif key == pygame.K_j:
             if self.selected_row < self.view_height - 1:
                 self.selected_row = self.selected_row + 1
             elif self.selected_row == self.view_height - 1 and self.view_y < self.tileset.rows - self.view_height:
                 self.view_y = self.view_y + 1
-        elif key == pg.K_k:
+        elif key == pygame.K_k:
             if self.selected_row > 0:
                 self.selected_row = self.selected_row - 1
             elif self.selected_row == 0 and self.view_y > 0:
                 self.view_y = self.view_y - 1
-        elif key == pg.K_l:
+        elif key == pygame.K_l:
             if self.selected_col < self.view_width - 1:
                 self.selected_col = self.selected_col + 1
             elif self.selected_col == self.view_width - 1 and self.view_x < self.tileset.cols - self.view_width:
                 self.view_x = self.view_x + 1
-        elif key == pg.K_h:
+        elif key == pygame.K_h:
             if self.selected_col > 0:
                 self.selected_col = self.selected_col - 1
             elif self.selected_col == 0 and self.view_x > 0:
                 self.view_x = self.view_x - 1
-        elif key == pg.K_q:
+        elif key == pygame.K_q:
             self.quit = True
 
     def _update_screen(self):
@@ -103,14 +105,14 @@ class TileSetBrowser():
                 if r == self.selected_row and c == self.selected_col:
                     self.selected_tile = (self.view_x + self.selected_col, self.view_y + self.selected_row)
                     rec2 = tile.get_rect().move([int(self.view_width*self.tileset.tile_width + self.tileset.tile_width), 0])
-                    tile2 = pg.transform.scale(tile, (rec.width*2, rec.height*2))
+                    tile2 = pygame.transform.scale(tile, (rec.width*2, rec.height*2))
                     self.surface.blit(tile2, rec2)
                     rec4 = rec2.move([int(self.tileset.tile_width * 2 + self.tileset.tile_width), 0])
-                    tile4 = pg.transform.scale(tile, (rec.width*4, rec.height*4))
+                    tile4 = pygame.transform.scale(tile, (rec.width*4, rec.height*4))
                     self.surface.blit(tile4, rec4)
         x0 = int(self.selected_col * self.tileset.tile_width)
         y0 = int(self.selected_row * self.tileset.tile_height)
-        pg.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)
+        pygame.draw.rect(self.surface, _white, (x0, y0, self.tileset.tile_width, self.tileset.tile_height), width=1)
         font = pygame.freetype.Font(None, size=25)
         if self.selected_tile:
             font.render_to(self.surface,
@@ -122,7 +124,7 @@ class TileSetBrowser():
         clock = Clock()
         while self.quit is False:
             self._update_screen()
-            pg.display.flip()
+            pygame.display.flip()
             clock.tick(60)
             self._handle_events()
         log.debug('Quitting')

@@ -119,7 +119,7 @@ class TileSetBrowser():
                     tile4 = pygame.transform.scale(
                         tile, (rec.width*4, rec.height*4))
                     self.surface.blit(tile4, rec4)
-        x0 = int(self.selected_col * self.tile_width) 
+        x0 = int(self.selected_col * self.tile_width)
         y0 = int(self.selected_row * self.tile_height)
         pygame.draw.rect(self.surface, _white, (x0, y0,
                          self.tile_width, self.tile_height), width=1)

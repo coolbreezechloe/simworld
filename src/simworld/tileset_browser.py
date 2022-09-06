@@ -8,7 +8,7 @@ from simworld.tileset import TileSet, get_tilesets
 log = logging.getLogger(__name__)
 
 
-class TileSetBrowser():
+class TilesetBrowser():
     def __init__(self, tileset: TileSet):
         self.tileset = tileset
         self.width = 800

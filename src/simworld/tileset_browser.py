@@ -149,5 +149,8 @@ def show_all():
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.DEBUG, style='{', format='{asctime}:{levelname}:{filename}:{lineno}:{message}')
+        level=logging.DEBUG,
+        style='{',
+        format='{asctime}:{levelname}:{filename}:{lineno}:{message}'
+    )
     show_all()

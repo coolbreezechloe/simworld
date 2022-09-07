@@ -143,7 +143,7 @@ class TilesetBrowser():
 
 def show_all():
     for tileset in get_tilesets():
-        t = TileSetBrowser(tileset)
+        t = TilesetBrowser(tileset)
         t.run()
 
 

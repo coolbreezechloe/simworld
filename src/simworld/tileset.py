@@ -34,11 +34,11 @@ class TileSet():
         row = ((index - 1) // self.cols)
         return self.tiles[(column, row)]
 
-def get_tilesets() -> list[TileSet]:
-    """Returns a dictionary which maps png files to their data
+def load_tilesets(search_locations: list[pathlib.Path]) -> list[TileSet]:
+    """Returns a list of TileSet objects derived from the input files
 
-    The function searches the directory this file is in for all PNG
-    files and assumes that such files have a name in the format
+    The function takes a list of Path objects representing individual PNG
+    files with a name of the format:
 
     NNNN-WWWxHHH.PNG
 
@@ -50,10 +50,10 @@ def get_tilesets() -> list[TileSet]:
     the source file name, the images themselves, and the size of the images.
     """
     result = list()
-    for p in pathlib.Path(__file__).parent.glob('*.png'):
-        name, size = p.name.split('-')
+    for path in search_locations:
+        name, size = path.name.split('-')
         width, height = [int(x) for x in size.strip('.png').split('x')]
-        t = split_tiles(pg.image.load(p), width, height, name)
+        t = split_tiles(pg.image.load(path), width, height, name)
         result.append(t)
     return result
 

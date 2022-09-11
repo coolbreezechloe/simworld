@@ -1,9 +1,10 @@
+import pathlib
 import pygame
 import pygame.freetype
 from pygame.time import Clock
 import logging
 
-from simworld.tileset import TileSet, get_tilesets
+from simworld.tileset import TileSet, load_tilesets
 
 log = logging.getLogger(__name__)
 
@@ -142,12 +143,15 @@ class TilesetBrowser():
 
 
 def show_all():
-    for tileset in get_tilesets():
+    for tileset in load_tilesets(pathlib.Path("C:\\Users\coolb\src\simworld-extras").glob('*.png')):
         t = TilesetBrowser(tileset)
         t.run()
 
 
 if __name__ == '__main__':
     logging.basicConfig(
-        level=logging.DEBUG, style='{', format='{asctime}:{levelname}:{filename}:{lineno}:{message}')
+        level=logging.DEBUG,
+        style='{',
+        format='{asctime}:{levelname}:{filename}:{lineno}:{message}'
+    )
     show_all()

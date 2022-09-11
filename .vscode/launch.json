@@ -8,7 +8,7 @@
             "name": "SimWorld : Tile Set Browser",
             "type": "python",
             "request": "launch",
-            "module": "simworld.tile_set_browser",
+            "module": "simworld.tileset_browser",
             "justMyCode": true
         }
     ]

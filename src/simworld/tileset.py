@@ -51,10 +51,11 @@ def load_tilesets(search_locations: list[pathlib.Path]) -> list[TileSet]:
     """
     result = list()
     for path in search_locations:
-        name, size = path.name.split('-')
-        width, height = [int(x) for x in size.strip('.png').split('x')]
-        t = split_tiles(pg.image.load(path), width, height, name)
-        result.append(t)
+        if path.name.count('-') and path.name.count('x'):
+            name, size = path.name.split('-')
+            width, height = [int(x) for x in size.strip('.png').split('x')]
+            t = split_tiles(pg.image.load(path), width, height, name)
+            result.append(t)
     return result
 
 def split_tiles(tileset: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:

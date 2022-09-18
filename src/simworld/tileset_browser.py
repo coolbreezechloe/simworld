@@ -150,7 +150,7 @@ def show_all():
         t.run()
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: nocover
     logging.basicConfig(
         level=logging.DEBUG,
         style='{',

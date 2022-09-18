@@ -11,6 +11,7 @@ log = logging.getLogger(__name__)
 _black = (0, 0, 0)
 _white = (255, 255, 255)
 
+
 class TilesetBrowser():
     def __init__(self, tileset: TileSet):
         self.tileset = tileset
@@ -96,46 +97,76 @@ class TilesetBrowser():
         elif key == pygame.K_q:
             self.quit = True
 
-    def _update_screen(self):
+    def _update_screen(self) -> None:
         self.surface.fill(_black)
         self._draw_view_area()
 
-    def _draw_view_area(self):
+    def _draw_view_area(self) -> None:
+        x = 10
+        y = 10
+
+        p = self._get_preview_surface()
+        pr = p.get_rect().move(x, y)
+        self.surface.blit(p, pr)
+
+        d = self._get_double_surface()
+        dr = d.get_rect().move(pr.topright).move(self.tile_width, 0)
+        self.surface.blit(d, dr)
+
+        q = self._get_quad_surface()
+        qr = q.get_rect().move(dr.topright).move(self.tile_width, 0)
+        self.surface.blit(q, qr)
+
+        t, tr = self._get_selected_tile_surface()
+        tr = tr.move(pr.bottomleft).move(0, self.tile_height)
+        self.surface.blit(t, tr)
+        pygame.draw.rect(self.surface, _white, tr, width=1)
+
+    def _get_preview_surface(self) -> pygame.Surface:
         rows = min(self.view_height, self.tileset.rows)
         cols = min(self.view_width, self.tileset.cols)
+        surface = pygame.Surface(
+            (cols*self.tileset.tile_width, rows*self.tileset.tile_height))
         for r in range(rows):
             for c in range(cols):
                 tile = self.tileset.tiles[(self.view_x + c, self.view_y + r)]
                 rec = tile.get_rect()
                 rec = rec.move([int(c*self.tile_width),
                                int(r*self.tile_height)])
-                self.surface.blit(tile, rec)
+                surface.blit(tile, rec)
                 if r == self.selected_row and c == self.selected_col:
                     self.selected_tile = (
                         self.view_x + self.selected_col, self.view_y + self.selected_row)
-                    rec2 = tile.get_rect().move(
-                        [int(self.view_width*self.tile_width + self.tile_width), 0])
-                    tile2 = pygame.transform.scale(
-                        tile, (rec.width*2, rec.height*2))
-                    self.surface.blit(tile2, rec2)
-                    rec4 = rec2.move(
-                        [int(self.tile_width * 2 + self.tile_width), 0])
-                    tile4 = pygame.transform.scale(
-                        tile, (rec.width*4, rec.height*4))
-                    self.surface.blit(tile4, rec4)
 
         x0 = int(self.selected_col * self.tile_width)
         y0 = int(self.selected_row * self.tile_height)
-        pygame.draw.rect(self.surface, _white, (x0, y0,
-                         self.tile_width, self.tile_height), width=1)
-        font = pygame.freetype.SysFont(None, size=25)
-        if self.selected_tile:
-            font.render_to(self.surface,
-                           (self.tile_width*self.view_width + self.tile_width,
-                            self.tile_height*self.view_height + self.tile_height),
-                           f"Selected Tile = {self.selected_tile}",
-                           fgcolor=_white)
+        pygame.draw.rect(
+            surface, _white, (x0, y0, self.tile_width, self.tile_height), width=1)
+        pygame.draw.rect(
+            surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
+        return surface
 
+    def _get_double_surface(self) -> pygame.Surface:
+        surface = pygame.Surface((self.tile_width*2, self.tile_height*2))
+        tile = self.tileset.tiles[self.selected_tile]
+        rec2 = tile.get_rect()
+        tile2 = pygame.transform.scale(tile, (self.tile_width*2, self.tile_height*2))
+        surface.blit(tile2, (0, 0))
+        pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
+        return surface
+
+    def _get_quad_surface(self) -> pygame.Surface:
+        surface = pygame.Surface((self.tile_width*4, self.tile_height*4))
+        tile = self.tileset.tiles[self.selected_tile]
+        tile = pygame.transform.scale(tile, (self.tile_width*4, self.tile_height*4))
+        surface.blit(tile, (0, 0))
+        pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
+        return surface
+
+    def _get_selected_tile_surface(self) -> tuple[pygame.Surface, pygame.Rect]:
+        font = pygame.freetype.SysFont(None, size=25)
+        surface, rect = font.render(f"Selected Tile = {self.selected_tile}", fgcolor=_white)
+        return surface, rect
 
     def run(self):
         clock = Clock()
@@ -150,7 +181,7 @@ class TilesetBrowser():
 def show_all():
     for tileset in load_tilesets(
             pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets"
-            ).glob('*.png')):
+                         ).glob('*.png')):
         t = TilesetBrowser(tileset)
         t.run()
 

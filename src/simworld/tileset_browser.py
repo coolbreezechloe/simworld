@@ -143,7 +143,9 @@ class TilesetBrowser():
 
 
 def show_all():
-    for tileset in load_tilesets(pathlib.Path("C:\\Users\coolb\src\simworld-extras").glob('*.png')):
+    for tileset in load_tilesets(
+            pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets"
+            ).glob('*.png')):
         t = TilesetBrowser(tileset)
         t.run()
 

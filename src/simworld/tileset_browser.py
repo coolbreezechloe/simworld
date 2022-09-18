@@ -8,6 +8,8 @@ from simworld.tileset import TileSet, load_tilesets
 
 log = logging.getLogger(__name__)
 
+_black = (0, 0, 0)
+_white = (255, 255, 255)
 
 class TilesetBrowser():
     def __init__(self, tileset: TileSet):
@@ -95,9 +97,10 @@ class TilesetBrowser():
             self.quit = True
 
     def _update_screen(self):
-        _black = (0, 0, 0)
-        _white = (255, 255, 255)
         self.surface.fill(_black)
+        self._draw_view_area()
+
+    def _draw_view_area(self):
         rows = min(self.view_height, self.tileset.rows)
         cols = min(self.view_width, self.tileset.cols)
         for r in range(rows):
@@ -120,6 +123,7 @@ class TilesetBrowser():
                     tile4 = pygame.transform.scale(
                         tile, (rec.width*4, rec.height*4))
                     self.surface.blit(tile4, rec4)
+
         x0 = int(self.selected_col * self.tile_width)
         y0 = int(self.selected_row * self.tile_height)
         pygame.draw.rect(self.surface, _white, (x0, y0,
@@ -131,6 +135,7 @@ class TilesetBrowser():
                             self.tile_height*self.view_height + self.tile_height),
                            f"Selected Tile = {self.selected_tile}",
                            fgcolor=_white)
+
 
     def run(self):
         clock = Clock()

@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "SimWorld : Collapse Function",
+            "type": "python",
+            "request": "launch",
+            "module": "simworld.collapse_function",
+            "justMyCode": true
+        },
+        {
             "name": "SimWorld : Tile Set Browser",
             "type": "python",
             "request": "launch",

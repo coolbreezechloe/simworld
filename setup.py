@@ -15,14 +15,14 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 # Fields marked as "Optional" may be commented out.
 
 setup(
-    name="simworld",    
+    name="simworld",
     version="1.0.0",
     description="A simple PyGame simulation",
-    long_description=long_description,    
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/coolbreezechloe/simworld",
-    author="Chloe Beelby",    
-    author_email="CoolBreezeChloe@gmail.com",    
+    author="Chloe Beelby",
+    author_email="CoolBreezeChloe@gmail.com",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     python_requires=">=3.7, <4",
@@ -30,13 +30,13 @@ setup(
     extras_require={
         "dev": ["coverage"],
         "test": ["coverage"],
-    },    
+    },
     package_data={
-        "simworld": ["introduction_assets/*"],
-    },    
+        "simworld": ["assets/*"],
+    },
     entry_points={  # Optional
         "console_scripts": [
             "simworld=simworld.main:start_game",
         ],
-    },    
+    },
 )

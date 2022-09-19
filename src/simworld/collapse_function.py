@@ -1,0 +1,157 @@
+import pathlib
+import pygame
+import pygame.freetype
+from pygame.time import Clock
+import logging
+
+from simworld.tileset import TileSet
+from simworld.rules import Rules, load_rules
+from simworld.tileset_browser import load_tilesets
+
+log = logging.getLogger(__name__)
+
+_black = (0, 0, 0)
+_white = (255, 255, 255)
+
+
+class ProbabilitySpace():
+    def __init__(self, tileset: TileSet, rules: list[Rules]):
+        self.tileset = tileset
+        self.width = 800
+        self.height = 600
+        self._setup_pygame()
+        self._setup_state()
+        self.rules = rules
+
+    def _setup_pygame(self):
+        pygame.freetype.init()
+        r = pygame.init()
+        log.debug(f"pygame.init() returned {r}")
+        surface = pygame.display.set_mode((self.width, self.height))
+        log.debug(f"created surface: {surface}")
+        pygame.display.set_caption(
+            f"Probability Space Reducer : {self.tileset.name}")
+        self.surface = surface
+
+    def _setup_state(self):
+        self.quit = False
+        self.view_x = 0
+        self.view_y = 0
+        self.tile_width = self.tileset.tile_width
+        self.tile_height = self.tileset.tile_height
+        self.view_width = self.width // self.tile_width
+        self.view_height = self.height // self.tile_height
+        self.current_state = dict()
+        for c in range(1000):
+            for r in range(1000):
+                self.current_state[(c, r)] = None
+
+    def _handle_events(self) -> None:
+        while not self.quit:
+            events = pygame.event.get()
+            if not events:
+                return
+            for event in events:
+                log.debug(f'next event is {event}')
+                if event.type == pygame.QUIT:
+                    self.quit = True
+                    break
+                elif event.type == pygame.KEYDOWN:
+                    self._handle_keydown(event.key)
+
+    def _handle_keydown(self, key) -> None:
+        def left():
+            if self.view_x > 0:
+                self.view_x = self.view_x - 1
+
+        def right():
+            if self.view_x < self.tileset.cols - self.view_width:
+                self.view_x = self.view_x + 1
+
+        def up():
+            if self.view_y > 0:
+                self.view_y = self.view_y - 1
+
+        def down():
+            if self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
+
+        def origin():
+            self.view_x = 0
+            self.view_y = 0
+
+        def quit():
+            self.quit = True
+
+        actions = {
+            pygame.K_LEFT: left,
+            pygame.K_a: left,
+            pygame.K_j: left,
+            pygame.K_RIGHT: right,
+            pygame.K_d: right,
+            pygame.K_l: right,
+            pygame.K_UP: up,
+            pygame.K_w: up,
+            pygame.K_DOWN: down,
+            pygame.K_s: down,
+            pygame.K_g: origin,
+            pygame.K_q: quit
+        }
+
+        if key in actions:
+            actions[key]()
+
+    def _update_screen(self) -> None:
+        self.surface.fill(_black)
+        self._draw_view_area()
+
+    def _draw_view_area(self) -> None:
+        g = self._get_game_surface()
+        gr = g.get_rect()
+        self.surface.blit(g, gr)
+        pygame.draw.rect(self.surface, _white,
+                         (0, 0, gr.width, gr.height), width=1)
+
+    def _get_game_surface(self) -> pygame.Surface:
+        rows = self.view_height
+        cols = self.view_width
+        surface = pygame.Surface(
+            (cols*self.tileset.tile_width, rows*self.tileset.tile_height))
+        for r in range(rows):
+            for c in range(cols):
+                tile = self.current_state[(self.view_x + c, self.view_y + r)]
+                if tile:
+                    rec = tile.get_rect()
+                    rec = rec.move([int(c*self.tile_width),
+                               int(r*self.tile_height)])
+                    surface.blit(tile, rec)
+
+        pygame.draw.rect(
+            surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
+        return surface
+
+    def run(self):
+        clock = Clock()
+        while self.quit is False:
+            self._update_screen()
+            pygame.display.flip()
+            clock.tick(60)
+            self._handle_events()
+        log.debug('Quitting')
+
+
+def show_all():
+    tilesets = load_tilesets(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*.png'))
+    for rules in load_rules(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*-rules.json')):
+        tileset = list(filter(lambda x: x.name == rules.name, tilesets))[0]
+        t = ProbabilitySpace(tileset, rules)
+        t.run()
+
+
+if __name__ == '__main__':  # pragma: nocover
+    logging.basicConfig(
+        level=logging.DEBUG,
+        style='{',
+        format='{asctime}:{levelname}:{filename}:{lineno}:{message}'
+    )
+    show_all()

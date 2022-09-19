@@ -3,6 +3,7 @@ import pygame
 import pygame.freetype
 from pygame.time import Clock
 import logging
+import random
 
 from simworld.tileset import TileSet
 from simworld.rules import Rules, load_rules
@@ -37,14 +38,17 @@ class ProbabilitySpace():
         self.quit = False
         self.view_x = 0
         self.view_y = 0
+        self.map_width = 100
+        self.map_height = 100
         self.tile_width = self.tileset.tile_width
         self.tile_height = self.tileset.tile_height
         self.view_width = self.width // self.tile_width
         self.view_height = self.height // self.tile_height
         self.current_state = dict()
-        for c in range(1000):
-            for r in range(1000):
-                self.current_state[(c, r)] = None
+        for c in range(self.map_width):
+            for r in range(self.map_height):
+                tile_index = [random.randint(1, self.tileset.cols*self.tileset.rows) for x in range(3)]
+                self.current_state[(c, r)] = [self.tileset.get_tile_by_index(x) for x in tile_index]
 
     def _handle_events(self) -> None:
         while not self.quit:
@@ -65,7 +69,7 @@ class ProbabilitySpace():
                 self.view_x = self.view_x - 1
 
         def right():
-            if self.view_x < self.tileset.cols - self.view_width:
+            if self.view_x < self.map_width - self.view_width:
                 self.view_x = self.view_x + 1
 
         def up():
@@ -73,7 +77,7 @@ class ProbabilitySpace():
                 self.view_y = self.view_y - 1
 
         def down():
-            if self.view_y < self.tileset.rows - self.view_height:
+            if self.view_y < self.map_height - self.view_height:
                 self.view_y = self.view_y + 1
 
         def origin():
@@ -86,12 +90,14 @@ class ProbabilitySpace():
         actions = {
             pygame.K_LEFT: left,
             pygame.K_a: left,
-            pygame.K_j: left,
+            pygame.K_h: left,
+            pygame.K_j: down,
             pygame.K_RIGHT: right,
             pygame.K_d: right,
             pygame.K_l: right,
             pygame.K_UP: up,
             pygame.K_w: up,
+            pygame.K_k: up,
             pygame.K_DOWN: down,
             pygame.K_s: down,
             pygame.K_g: origin,
@@ -119,12 +125,15 @@ class ProbabilitySpace():
             (cols*self.tileset.tile_width, rows*self.tileset.tile_height))
         for r in range(rows):
             for c in range(cols):
-                tile = self.current_state[(self.view_x + c, self.view_y + r)]
-                if tile:
-                    rec = tile.get_rect()
-                    rec = rec.move([int(c*self.tile_width),
-                               int(r*self.tile_height)])
-                    surface.blit(tile, rec)
+                pspace = self.current_state[(self.view_x + c, self.view_y + r)]
+                if len(pspace) == 1:
+                    tile = pspace[0]
+                    rec = tile[0].get_rect()
+                else:
+                    font = pygame.freetype.SysFont(None, size=7)
+                    tile, rec = font.render(f"|S| = {len(pspace)}", fgcolor=_white)
+                rec = rec.move([int(c*self.tile_width), int(r*self.tile_height)])
+                surface.blit(tile, rec)
 
         pygame.draw.rect(
             surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)

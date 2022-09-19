@@ -164,7 +164,8 @@ class TilesetBrowser():
 
     def _get_selected_tile_surface(self) -> tuple[pygame.Surface, pygame.Rect]:
         font = pygame.freetype.SysFont(None, size=25)
-        surface, rect = font.render(f"Selected Tile = {self.selected_tile}", fgcolor=_white)
+        index = 1 + self.selected_col + self.view_x + (self.selected_row + self.view_y) * self.tileset.cols
+        surface, rect = font.render(f"Selected Tile = {self.selected_tile}, Tile Index = {index}", fgcolor=_white)
         return surface, rect
 
     def run(self):

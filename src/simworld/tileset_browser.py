@@ -149,7 +149,6 @@ class TilesetBrowser():
     def _get_double_surface(self) -> pygame.Surface:
         surface = pygame.Surface((self.tile_width*2, self.tile_height*2))
         tile = self.tileset.tiles[self.selected_tile]
-        rec2 = tile.get_rect()
         tile2 = pygame.transform.scale(tile, (self.tile_width*2, self.tile_height*2))
         surface.blit(tile2, (0, 0))
         pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)

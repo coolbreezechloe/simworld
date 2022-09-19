@@ -16,13 +16,13 @@ _white = (255, 255, 255)
 
 
 class ProbabilitySpace():
-    def __init__(self, tileset: TileSet, rules: list[Rules]):
+    def __init__(self, tileset: TileSet, rules: Rules):
         self.tileset = tileset
         self.width = 800
         self.height = 600
+        self.rules = rules
         self._setup_pygame()
         self._setup_state()
-        self.rules = rules
 
     def _setup_pygame(self):
         pygame.freetype.init()
@@ -35,6 +35,7 @@ class ProbabilitySpace():
         self.surface = surface
 
     def _setup_state(self):
+        self.current_state = dict()
         self.quit = False
         self.view_x = 0
         self.view_y = 0
@@ -44,11 +45,13 @@ class ProbabilitySpace():
         self.tile_height = self.tileset.tile_height
         self.view_width = self.width // self.tile_width
         self.view_height = self.height // self.tile_height
-        self.current_state = dict()
+        self._create_random_state()
+
+    def _create_random_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                tile_index = [random.randint(1, self.tileset.cols*self.tileset.rows) for x in range(3)]
-                self.current_state[(c, r)] = [self.tileset.get_tile_by_index(x) for x in tile_index]
+                tiles = self.tileset.cols * self.tileset.rows + 1
+                self.current_state[(c, r)] = [self.tileset.get_tile_by_index(x) for x in range(1, tiles)]
 
     def _handle_events(self) -> None:
         while not self.quit:
@@ -130,9 +133,9 @@ class ProbabilitySpace():
                     tile = pspace[0]
                     rec = tile[0].get_rect()
                 else:
-                    font = pygame.freetype.SysFont(None, size=7)
-                    tile, rec = font.render(f"|S| = {len(pspace)}", fgcolor=_white)
-                rec = rec.move([int(c*self.tile_width), int(r*self.tile_height)])
+                    font = pygame.freetype.SysFont(None, size=12)
+                    tile, rec = font.render(f"|S|={len(pspace)}", fgcolor=_white)
+                rec = rec.move([int(c*self.tile_width + 2), int(r*self.tile_height + 2)])
                 surface.blit(tile, rec)
 
         pygame.draw.rect(
@@ -152,7 +155,7 @@ class ProbabilitySpace():
 def show_all():
     tilesets = load_tilesets(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*.png'))
     for rules in load_rules(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*-rules.json')):
-        tileset = list(filter(lambda x: x.name == rules.name, tilesets))[0]
+        tileset = list(filter(lambda _r: _r.name == rules.name, tilesets))[0]
         t = ProbabilitySpace(tileset, rules)
         t.run()
 

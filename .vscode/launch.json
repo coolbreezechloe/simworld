@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "SimWorld : Collapse Function",
+            "name": "SimWorld : Rule Editor",
             "type": "python",
             "request": "launch",
-            "module": "simworld.collapse_function",
+            "module": "simworld.rule_editor",
             "justMyCode": true
         },
         {

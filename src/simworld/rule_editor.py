@@ -50,8 +50,9 @@ class ProbabilitySpace():
     def _create_random_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                tiles = self.tileset.cols * self.tileset.rows + 1
-                self.current_state[(c, r)] = [self.tileset.get_tile_by_index(x) for x in range(1, tiles)]
+                initial_state = [self.tileset.get_tile_by_index(
+                    i) for i in [66, 98, 25, 75, 130, 97, 99, 161, 162, 163, 130]]
+                self.current_state[(c, r)] = initial_state
 
     def _handle_events(self) -> None:
         while not self.quit:
@@ -115,11 +116,10 @@ class ProbabilitySpace():
         self._draw_view_area()
 
     def _draw_view_area(self) -> None:
-        g = self._get_game_surface()
-        gr = g.get_rect()
-        self.surface.blit(g, gr)
-        pygame.draw.rect(self.surface, _white,
-                         (0, 0, gr.width, gr.height), width=1)
+        surface = self._get_game_surface()
+        rect = surface.get_rect()
+        self.surface.blit(surface, rect)
+        pygame.draw.rect(self.surface, _white, (0, 0, rect.width, rect.height), width=1)
 
     def _get_game_surface(self) -> pygame.Surface:
         rows = self.view_height

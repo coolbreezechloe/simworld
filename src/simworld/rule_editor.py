@@ -158,9 +158,6 @@ class RuleEditor():
 
     def _update_screen(self) -> None:
         self.surface.fill(_black)
-        self._draw_view_area()
-
-    def _draw_view_area(self) -> None:
         surface = self._get_game_surface()
         rect = surface.get_rect()
         self.surface.blit(surface, rect)

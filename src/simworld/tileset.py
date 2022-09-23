@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import pathlib
 import pygame as pg
 from pygame import Surface
+from simworld.rules import TileIndex
 
 Row = int
 Column = int
@@ -18,7 +19,7 @@ class TileSet():
     rows: int
     name: str
 
-    def get_tile_by_index(self, index: int) -> Tile:
+    def get_tile_by_index(self, index: TileIndex) -> Tile:
         """Get a tile from the complete set of tiles using a 1-based index
 
         For example if the source file contained 100 tiles (perhaps arranged

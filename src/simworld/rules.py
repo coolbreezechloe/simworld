@@ -4,14 +4,13 @@ import json
 from typing import Callable
 
 
-TileIndex = int
+TileIndex = str
 Direction = str
-Rule = Callable
 
 @dataclass
 class Rules():
     """This class is a handy tool for dealing with tilesets in 2D games"""
-    rules: dict[TileIndex, list[tuple[Direction, Rule]]]
+    rules: dict[TileIndex, dict[Direction, list[TileIndex]]]
     name: str
 
 

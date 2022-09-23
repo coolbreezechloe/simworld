@@ -1,3 +1,4 @@
+from copy import deepcopy
 import pathlib
 import pygame
 import pygame.freetype
@@ -5,8 +6,8 @@ from pygame.time import Clock
 import logging
 import random
 
-from simworld.tileset import TileSet, Tile
-from simworld.rules import Rules, load_rules
+from simworld.tileset import TileSet, Tile, Coordinate
+from simworld.rules import Rules, load_rules, TileIndex
 from simworld.tileset_browser import load_tilesets
 
 log = logging.getLogger(__name__)
@@ -14,13 +15,14 @@ log = logging.getLogger(__name__)
 _black = (0, 0, 0)
 _white = (255, 255, 255)
 
+WorldState = dict[Coordinate, list[TileIndex]]
 
 class RuleEditor():
-    def __init__(self, tileset: TileSet, rules: Rules):
+    def __init__(self, tileset: TileSet, rule_set: Rules):
         self.tileset = tileset
         self.width = 800
         self.height = 600
-        self.rules = rules
+        self.rule_set = rule_set
         self._setup_pygame()
         self._setup_state()
 
@@ -35,7 +37,7 @@ class RuleEditor():
         self.surface = surface
 
     def _setup_state(self):
-        self.current_state = dict()
+        self.current_state: WorldState = dict()
         self.quit = False
         self.view_x = 0
         self.view_y = 0
@@ -50,13 +52,13 @@ class RuleEditor():
         self.tile_height = self.tileset.tile_height
         self.view_width = self.width // self.tile_width
         self.view_height = self.height // self.tile_height
+        self.original_state: WorldState = None
         self._create_random_state()
 
     def _create_random_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                initial_state = [self.tileset.get_tile_by_index(
-                    i) for i in [66, 98, 25, 75, 130, 97, 99, 161, 162, 163, 130]]
+                initial_state = list([65, 66, 67, 97, 98, 99, 129, 130, 131, 161, 162, 163, 130, 368, 429])
                 self.current_state[(c, r)] = initial_state
 
     def _handle_events(self) -> None:
@@ -93,19 +95,55 @@ class RuleEditor():
         random.shuffle(options)
         for o in options:
             if self._fix(x, y, o):
+                log.debug(f'Fixed the value {o} at ({x}, {y})')
+                log.debug(f'Current state: {self.current_state}')
                 return
         log.error(f'No valid options for ({x}, {y}) in {self.current_state[(x, y)]}')
-        self.quit = True
+        self.current_state[(x, y)] = [368]
+        
 
-    def _fix(self, x: int, y: int, choice: Tile) -> bool:
+    def _fix(self, x: int, y: int, choice: TileIndex, top: bool = True) -> bool:
         """Attempt to reduce the entropy to zero (fix) a given choice at a given location (x, y)
 
         This function will propogate the rules for the given choice and if the choice is valid
         will return True and update the internal state. If the choice breaks a rule the function
         returns False and the state is not modified"""
+        result = True
+        if top:
+            self.original_state = deepcopy(self.current_state)
+
         self.current_state[(x, y)] = [choice]
         self.dirty = True
-        return True
+        rules = self.rule_set.rules.get(str(choice), [])
+        for direction in rules:
+            relative = {'Up': (0, -1), 'Down': (0, 1), 'Left': (-1, 0), 'Right': (1, 0)}
+            xd, yd = relative[direction]
+            x2 = x + xd
+            y2 = y + yd
+            if x2 >= 0 and y2 >= 0 and x2 < self.map_width and y2 < self.map_height:
+                other = set(self.current_state[(x2, y2)])
+                allowed = set(rules[direction])
+                allow_any = bool(len(allowed) == 1 and list(allowed)[0] == 0)
+                if allow_any:
+                    continue
+                u = allowed.intersection(other)
+                if len(u) == 0:
+                    result = False
+                    break
+                elif len(u) == 1 and not u == other:
+                    result = self._fix(x2, y2, u.pop(), False)
+                    break
+                elif not u == other:
+                    self.current_state[(x2, y2)] = list(u)
+
+
+        if top and not result:
+            self.current_state = self.original_state
+            self.original_state = None
+            self.dirty = False
+        elif top and result:
+            self.original_state = None
+        return result
 
     def _handle_keydown(self, key) -> None:
         def left():
@@ -171,7 +209,7 @@ class RuleEditor():
             for c in range(cols):
                 options = self.current_state[(self.view_x + c, self.view_y + r)]
                 if len(options) == 1:
-                    tile = options[0]
+                    tile = self.tileset.get_tile_by_index(options[0])
                     rec = tile.get_rect()
                 else:
                     font = pygame.freetype.SysFont(None, size=15)

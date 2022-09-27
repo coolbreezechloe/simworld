@@ -1,4 +1,5 @@
 from copy import deepcopy
+from math import inf
 import pathlib
 import pygame
 import pygame.freetype
@@ -14,7 +15,7 @@ log = logging.getLogger(__name__)
 
 _black = (0, 0, 0)
 _white = (255, 255, 255)
-
+_initial_state = list([2, 3, 34, 35, 65, 66, 67, 97, 98, 99, 129, 130, 131, 161, 162, 163, 130, 368, 429])
 WorldState = dict[Coordinate, list[TileIndex]]
 
 class RuleEditor():
@@ -46,8 +47,8 @@ class RuleEditor():
         self.selected_row = 0
         self.selected_col = 0
         self.dirty = True
-        self.map_width = 100
-        self.map_height = 100
+        self.map_width = 10
+        self.map_height = 10
         self.tile_width = self.tileset.tile_width
         self.tile_height = self.tileset.tile_height
         self.view_width = self.width // self.tile_width
@@ -58,7 +59,7 @@ class RuleEditor():
     def _create_random_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                initial_state = list([65, 66, 67, 97, 98, 99, 129, 130, 131, 161, 162, 163, 130, 368, 429])
+                initial_state = _initial_state
                 self.current_state[(c, r)] = initial_state
 
     def _handle_events(self) -> None:
@@ -89,6 +90,9 @@ class RuleEditor():
                         self._handle_click(*self.up_at)
 
     def _handle_click(self, x: int, y: int) -> None:
+        self._fix_at_random(x, y)
+
+    def _fix_at_random(self, x: int, y: int) -> None:
         options = self.current_state[(x, y)]
         if len(options) == 1:
             return
@@ -96,11 +100,10 @@ class RuleEditor():
         for o in options:
             if self._fix(x, y, o):
                 log.debug(f'Fixed the value {o} at ({x}, {y})')
-                log.debug(f'Current state: {self.current_state}')
                 return
-        log.error(f'No valid options for ({x}, {y}) in {self.current_state[(x, y)]}')
+        log.error(f'No valid options for ({x}, {y})')
         self.current_state[(x, y)] = [368]
-        
+
 
     def _fix(self, x: int, y: int, choice: TileIndex, top: bool = True) -> bool:
         """Attempt to reduce the entropy to zero (fix) a given choice at a given location (x, y)
@@ -174,6 +177,38 @@ class RuleEditor():
         def quit():
             self.quit = True
 
+        def refresh():
+            self._setup_state()
+
+        def finish():
+            self.dirty = True
+            while True:
+                lowest_cells = list()
+                lowest_value = None
+                for (col, row) in self.current_state:
+                    c = len(self.current_state[(col, row)])
+                    if c == 1:
+                        continue
+                    if lowest_value is None or c < lowest_value:
+                        lowest_value = c
+                        lowest_cells = list()
+                        lowest_cells.append((col, row))
+                    elif c == lowest_value:
+                        lowest_cells.append((col, row))
+                if lowest_value:
+                    for col, row in lowest_cells:
+                        self._fix_at_random(col, row)
+                else:
+                    break
+
+        def clear():
+            for (col, row) in self.current_state:
+                o = self.current_state[(col, row)]
+                if len(o) == 1 and o[0] == 368:
+                    self.current_state[(col, row)] = _initial_state
+                    self.dirty = True
+
+
         actions = {
             pygame.K_LEFT: left,
             pygame.K_a: left,
@@ -188,7 +223,11 @@ class RuleEditor():
             pygame.K_DOWN: down,
             pygame.K_s: down,
             pygame.K_g: origin,
-            pygame.K_q: quit
+            pygame.K_q: quit,
+            pygame.K_F5: refresh,
+            pygame.K_r: refresh,
+            pygame.K_f: finish,
+            pygame.K_c: clear
         }
 
         if key in actions:
@@ -202,8 +241,8 @@ class RuleEditor():
         pygame.draw.rect(self.surface, _white, (0, 0, rect.width, rect.height), width=1)
 
     def _get_game_surface(self) -> pygame.Surface:
-        rows = self.view_height
-        cols = self.view_width
+        rows = min(self.view_height, self.map_height)
+        cols = min(self.view_width, self.map_width)
         surface = pygame.Surface((cols*self.tileset.tile_width, rows*self.tileset.tile_height))
         for r in range(rows):
             for c in range(cols):

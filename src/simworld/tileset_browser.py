@@ -4,7 +4,8 @@ import pygame.freetype
 from pygame.time import Clock
 import logging
 
-from simworld.tileset import TileSet, load_tilesets
+from simworld.tileset import TileSet, load_tileset
+from simworld.rules import load_rules
 
 log = logging.getLogger(__name__)
 
@@ -179,11 +180,9 @@ class TilesetBrowser():
 
 
 def show_all():
-    for tileset in load_tilesets(
-            pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets"
-                         ).glob('*.png')):
-        t = TilesetBrowser(tileset)
-        t.run()
+    for rules in load_rules(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*-rules.json')):
+        tileset = load_tileset(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets" / rules.tileset_filename), rules)
+        TilesetBrowser(tileset).run()
 
 
 if __name__ == '__main__':  # pragma: nocover

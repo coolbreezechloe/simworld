@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import pathlib
 import pygame as pg
 from pygame import Surface
-from simworld.rules import TileIndex
+from simworld.rules import TileIndex, Rules
 
 Row = int
 Column = int
@@ -35,29 +35,13 @@ class TileSet():
         row = ((index - 1) // self.cols)
         return self.tiles[(column, row)]
 
-def load_tilesets(search_locations: list[pathlib.Path]) -> list[TileSet]:
-    """Returns a list of TileSet objects derived from the input files
-
-    The function takes a list of Path objects representing individual PNG
-    files with a name of the format:
-
-    NNNN-WWWxHHH.PNG
-
-    Where NNNN is the name of the image, WWW and HHH are the width and
-    height of the individual tiles (in pixels) contained in the image.
-
-    The function will return a list of all such files found in the folder
-    in the form of TileSet entries which will include relevant details like
-    the source file name, the images themselves, and the size of the images.
+def load_tileset(file_location: pathlib.Path, rule_set: Rules) -> TileSet:
+    """Returns a TileSet object based on the supplied RuleSet
     """
-    result = list()
-    for path in search_locations:
-        if path.name.count('-') and path.name.count('x'):
-            name, size = path.name.split('-')
-            width, height = [int(x) for x in size.strip('.png').split('x')]
-            t = split_tiles(pg.image.load(path), width, height, name)
-            result.append(t)
-    return result
+    name = rule_set.name
+    width = rule_set.width
+    height = rule_set.height
+    return split_tiles(pg.image.load(file_location), width, height, name)
 
 def split_tiles(tileset: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:
     """Split a surface into subsurfaces for each tile in the set

@@ -4,30 +4,44 @@ import json
 from typing import Callable
 
 
-TileIndex = str
+TileIndex = int
 Direction = str
+AvailableOptions = set[TileIndex]
 
 @dataclass
 class Rules():
     """This class is a handy tool for dealing with tilesets in 2D games"""
-    rules: dict[TileIndex, dict[Direction, list[TileIndex]]]
+    rules: dict[TileIndex, dict[Direction,  AvailableOptions]]
     name: str
+    author: str
+    error_tile: TileIndex
+    file_name: str
+    width: int
+    height: int
+
+    def __post_init__(self):
+        for k in self.rules.keys():
+            r = self.rules[k]
+            for d in r.keys():
+                # in JSON there is no concept of a set structure, only lists
+                # so we must manually convert. This assumes data passed in
+                # directly from a json.load() call as in the load_rules function
+                r[d] = set(r[d])
+
+    def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
+        return self.rules.get(str(index), dict())
 
 
-def load_rules(search_locations: list[pathlib.Path]) -> list[Rules]:
-    """Returns a Rules objects derived from the input files
-
-    The function takes a list of Path objects representing individual rules
-    files for a format:
-
-    NNNN-rules.json
-
-    Where NNNN is the name of the corresponding tileset.
-
+def load_rules(rule_file: pathlib.Path) -> Rules:
+    """Returns a Rules objects derived from the input file
     """
-    result = list()
-    for path in search_locations:
-        if path.name.endswith('-rules.json'):
-            rules = json.load(open(path.absolute()))
-            result.append(Rules(rules, path.name.split('-')[0]))
-    return result
+    rule_spec = json.load(open(rule_file.absolute()))
+    name = rule_spec['Name']
+    author = rule_spec['Author']
+    error_tile = rule_spec['ErrorTile']
+    file_name = rule_spec['FileName']
+    rules = rule_spec['Rules']
+    width = rule_spec['TileWidth']
+    height = rule_spec['TileHeight']
+
+    return Rules(rules, name, author, error_tile, file_name, width, height)

@@ -75,6 +75,8 @@ class GlobalState():
                 elif c == lowest_value:
                     lowest_cells.append((col, row))
             if lowest_value:
+                # TODO: the next line is not needed and greatly affects results
+                # should support multiple selection strategies.
                 random.shuffle(lowest_cells)
                 for col, row in lowest_cells:
                     self._fix_at_random(col, row)

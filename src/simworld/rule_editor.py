@@ -25,8 +25,8 @@ class GlobalState():
     map_width: int
     map_height: int
     rule_set: Rules
-    down_at: tuple[TileIndex, TileIndex] = (0, 0)
-    up_at: tuple[TileIndex, TileIndex] = (0, 0)
+    down_at: Coordinate = (0, 0)
+    up_at: Coordinate = (0, 0)
     selected_row: int = 0
     selected_col: int = 0
     dirty: bool = True
@@ -90,7 +90,7 @@ class GlobalState():
 
     def _fix(self, x: int, y: int, choice: TileIndex) -> bool:
         self.current_state[(x, y)] = {choice}
-        result = True
+        result = False
         rules = self.rule_set.get_rule_by_index(choice)
         for direction in rules:
             relative = {'Up': (0, -1), 'Down': (0, 1), 'Left': (-1, 0), 'Right': (1, 0)}

@@ -20,16 +20,19 @@ class Rules():
     height: int
 
     def __post_init__(self):
-        for k in self.rules.keys():
+        for k in list(self.rules.keys()):
+            # In the JSON dictionary keys must be strings but in our model
+            # we let the keys be their integer values.
             r = self.rules[k]
+            self.rules[int(k)] = r
+            del self.rules[k]
             for d in r.keys():
                 # in JSON there is no concept of a set structure, only lists
-                # so we must manually convert. This assumes data passed in
-                # directly from a json.load() call as in the load_rules function
+                 # so we must manually convert.
                 r[d] = set(r[d])
 
     def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
-        return self.rules.get(str(index), dict())
+        return self.rules.get(index, dict())
 
 
 def load_rules(rule_file: pathlib.Path) -> Rules:

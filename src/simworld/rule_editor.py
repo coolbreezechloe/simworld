@@ -1,6 +1,4 @@
-from ast import Global
 from dataclasses import dataclass, field
-from math import inf
 import pathlib
 import pygame
 import pygame.freetype
@@ -20,6 +18,7 @@ _white = (255, 255, 255)
 _initial_state = {2, 3, 34, 35, 65, 66, 67, 97, 98, 99, 129, 130, 131, 161, 162, 163, 130, 429}
 
 ProbabilitySpace = dict[Coordinate, AvailableOptions]
+
 
 @dataclass
 class GlobalState():

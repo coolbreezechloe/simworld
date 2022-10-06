@@ -1,3 +1,4 @@
+from email.mime import base
 import pathlib
 import pygame
 import pygame.freetype
@@ -180,8 +181,10 @@ class TilesetBrowser():
 
 
 def show_all():
-    for rules in load_rules(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets").glob('*-rules.json')):
-        tileset = load_tileset(pathlib.Path(pathlib.Path(__file__).parent.parent.parent / "assets" / rules.tileset_filename), rules)
+    base_folder = pathlib.Path(__file__).parent.parent.parent
+    for r in pathlib.Path(base_folder / "assets" / "rules").glob('*-rules.json'):
+        rules = load_rules(r)
+        tileset = load_tileset(base_folder / "assets" / "tilesets" / rules.file_name, rules)
         TilesetBrowser(tileset).run()
 
 

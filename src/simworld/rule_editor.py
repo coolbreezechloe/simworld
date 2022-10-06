@@ -15,7 +15,6 @@ log = logging.getLogger(__name__)
 
 _black = (0, 0, 0)
 _white = (255, 255, 255)
-_initial_state = {2, 3, 34, 35, 65, 66, 67, 97, 98, 99, 129, 130, 131, 161, 162, 163, 130, 429}
 
 ProbabilitySpace = dict[Coordinate, AvailableOptions]
 
@@ -40,7 +39,7 @@ class GlobalState():
     def reset_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                self.current_state[(c, r)] = set(_initial_state)
+                self.current_state[(c, r)] = set()
 
     def get_state_by_coordinate(self, x: int, y: int) -> AvailableOptions:
         return self.current_state.get((x, y), set())
@@ -86,7 +85,7 @@ class GlobalState():
         for (col, row) in self.current_state:
             o = list(self.current_state[(col, row)])
             if len(o) == 1 and o[0] == self.error_tile:
-                self.current_state[(col, row)] = set(_initial_state)
+                self.current_state[(col, row)] = set()
                 self.dirty = True
 
     def _fix(self, x: int, y: int, choice: TileIndex) -> bool:

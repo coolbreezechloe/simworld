@@ -132,8 +132,8 @@ class GlobalState():
 class RuleEditor():
     def __init__(self, tileset: TileSet, rule_set: Rules):
         self.tileset = tileset
-        self.width = 800
-        self.height = 600
+        self.width = 250
+        self.height = 250
         self.rule_set = rule_set
         self._setup_pygame()
         self._setup_state()
@@ -149,7 +149,7 @@ class RuleEditor():
         self.surface = surface
 
     def _setup_state(self):
-        self.global_state = GlobalState(map_width=10, map_height=10, error_tile=368, rule_set=self.rule_set)
+        self.global_state = GlobalState(map_width=20, map_height=20, error_tile=368, rule_set=self.rule_set)
         self.global_state.reset_state()
         self.view_x = 0
         self.view_y = 0
@@ -170,7 +170,6 @@ class RuleEditor():
             if not events:
                 return
             for event in events:
-                log.debug(f'next event is {event}')
                 if event.type == pygame.QUIT:
                     self.quit = True
                     break
@@ -201,7 +200,7 @@ class RuleEditor():
                 self.dirty = True
 
         def right():
-            if self.view_x < self.map_width - self.view_width:
+            if self.view_x < self.global_state.map_width - self.view_width:
                 self.view_x = self.view_x + 1
                 self.dirty = True
 
@@ -211,7 +210,7 @@ class RuleEditor():
                 self.dirty = True
 
         def down():
-            if self.view_y < self.map_height - self.view_height:
+            if self.view_y < self.global_state.map_height - self.view_height:
                 self.view_y = self.view_y + 1
                 self.dirty = True
 
@@ -257,7 +256,8 @@ class RuleEditor():
         }
 
         if key in actions:
-            actions[key]()
+            handler = actions[key]
+            handler()
 
     def _update_screen(self) -> None:
         self.surface.fill(_black)

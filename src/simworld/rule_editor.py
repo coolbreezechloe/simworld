@@ -189,6 +189,8 @@ class RuleEditor():
                     self.up_at = ((x // self.tile_width) + self.view_x, (y // self.tile_height) + self.view_y)
                     if self.up_at == self.down_at:
                         self._handle_click(*self.up_at)
+                else:
+                    log.debug(f'Unhandled event: {event}')
 
     def _handle_click(self, x: int, y: int) -> None:
         self.global_state._fix_at_random(x, y)

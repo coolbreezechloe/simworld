@@ -278,7 +278,7 @@ class RuleEditor():
                     tile = self.tileset.get_tile_by_index(options[0])
                     rec = tile.get_rect()
                 else:
-                    font = pygame.freetype.SysFont(None, size=15)
+                    font = pygame.freetype.SysFont(pygame.font.get_default_font(), size=15)
                     tile, rec = font.render(f"{len(options)}", fgcolor=_white)
                 rec = rec.move([int(c*self.tile_width), int(r*self.tile_height)])
                 surface.blit(tile, rec)

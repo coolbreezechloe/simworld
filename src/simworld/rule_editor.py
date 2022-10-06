@@ -85,7 +85,7 @@ class GlobalState():
         for (col, row) in self.current_state:
             o = list(self.current_state[(col, row)])
             if len(o) == 1 and o[0] == self.error_tile:
-                self.current_state[(col, row)] = set(_initial_state)
+                self.current_state[(col, row)] = set()
                 self.dirty = True
 
     def _fix(self, x: int, y: int, choice: TileIndex) -> bool:

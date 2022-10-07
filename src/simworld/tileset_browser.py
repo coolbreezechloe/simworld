@@ -5,7 +5,7 @@ import pygame.freetype
 from pygame.time import Clock
 import logging
 
-from simworld.tileset import TileSet, load_tileset
+from simworld.tileset import Coordinate, TileSet, load_tileset
 from simworld.rules import load_rules
 
 log = logging.getLogger(__name__)
@@ -39,7 +39,7 @@ class TilesetBrowser():
         self.view_y_delta = 0
         self.view_width = 10
         self.view_height = 10
-        self.selected_tile = None
+        self.selected_tile: Coordinate = (0, 0)
         self.selected_col = self.view_width // 2
         self.selected_row = self.view_height // 2
         self.tile_width = self.tileset.tile_width
@@ -164,8 +164,8 @@ class TilesetBrowser():
         pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
         return surface
 
-    def _get_selected_tile_surface(self) -> tuple[pygame.Surface, pygame.Rect]:
-        font = pygame.freetype.SysFont(None, size=25)
+    def _get_selected_tile_surface(self) -> tuple[pygame.surface.Surface, pygame.rect.Rect]:
+        font = pygame.freetype.SysFont(pygame.font.get_default_font(), size=25)
         index = 1 + self.selected_col + self.view_x + (self.selected_row + self.view_y) * self.tileset.cols
         surface, rect = font.render(f"Selected Tile = {self.selected_tile}, Tile Index = {index}", fgcolor=_white)
         return surface, rect

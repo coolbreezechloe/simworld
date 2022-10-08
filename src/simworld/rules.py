@@ -44,3 +44,4 @@ def load_rules(rule_file: pathlib.Path) -> Rules:
     tiles = rule_spec['Tiles']
 
     rules = Rules(name, author, file_name, tile_width, tile_height, error_tile, tiles)
+    return rules

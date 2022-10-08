@@ -7,32 +7,28 @@ from typing import Callable
 TileIndex = int
 Direction = str
 AvailableOptions = set[TileIndex]
+TileDefinition = dict
+
 
 @dataclass
 class Rules():
     """This class is a handy tool for dealing with tilesets in 2D games"""
-    rules: dict[TileIndex, dict[Direction,  AvailableOptions]]
     name: str
     author: str
-    error_tile: TileIndex
     file_name: str
-    width: int
-    height: int
+    tile_width: int
+    tile_height: int
+    error_tile: TileIndex
+    tiles: dict[TileIndex, TileDefinition]
 
     def __post_init__(self):
-        for k in list(self.rules.keys()):
-            # In the JSON dictionary keys must be strings but in our model
-            # we let the keys be their integer values.
-            r = self.rules[k]
-            self.rules[int(k)] = r
-            del self.rules[k]
-            for d in r.keys():
-                # in JSON there is no concept of a set structure, only lists
-                 # so we must manually convert.
-                r[d] = set(r[d])
+        result = dict()
+        for d in self.tiles:
+            i = d['Index']  # type: ignore
+            result[i] = d
 
     def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
-        return self.rules.get(index, dict())
+        return self.tiles.get(index, dict())
 
 
 def load_rules(rule_file: pathlib.Path) -> Rules:
@@ -41,10 +37,10 @@ def load_rules(rule_file: pathlib.Path) -> Rules:
     rule_spec = json.load(open(rule_file.absolute()))
     name = rule_spec['Name']
     author = rule_spec['Author']
-    error_tile = rule_spec['ErrorTile']
     file_name = rule_spec['FileName']
-    rules = rule_spec['Rules']
-    width = rule_spec['TileWidth']
-    height = rule_spec['TileHeight']
+    tile_width = rule_spec['TileWidth']
+    tile_height = rule_spec['TileHeight']
+    error_tile = rule_spec['ErrorTile']
+    tiles = rule_spec['Tiles']
 
-    return Rules(rules, name, author, error_tile, file_name, width, height)
+    rules = Rules(name, author, file_name, tile_width, tile_height, error_tile, tiles)

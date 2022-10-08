@@ -1,6 +1,6 @@
 {
-    "Author": "Chloe Beelby",
     "Name": "Basic Terrain Rules",
+    "Author": "Chloe Beelby",
     "FileName": "terrain-32x32.png",
     "TileWidth": 32,
     "TileHeight": 32,

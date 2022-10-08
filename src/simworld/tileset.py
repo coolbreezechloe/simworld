@@ -39,8 +39,8 @@ def load_tileset(file_location: pathlib.Path, rule_set: Rules) -> TileSet:
     """Returns a TileSet object based on the supplied RuleSet
     """
     name = rule_set.name
-    width = rule_set.width
-    height = rule_set.height
+    width = rule_set.tile_width
+    height = rule_set.tile_height
     return split_tiles(pg.image.load(file_location), width, height, name)
 
 def split_tiles(tileset: Surface, tile_width: int, tile_height: int, name: str) -> TileSet:

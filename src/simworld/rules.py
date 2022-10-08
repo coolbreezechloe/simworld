@@ -26,6 +26,9 @@ class Rules():
         for d in self.tiles:
             i = d['Index']  # type: ignore
             result[i] = d
+            for dir, items in result[i]['Rules'].items():
+                result[i]['Rules'][dir] = set(items)
+        self.tiles = result
 
     def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
         return self.tiles.get(index, dict())

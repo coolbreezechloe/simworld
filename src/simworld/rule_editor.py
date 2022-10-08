@@ -39,7 +39,7 @@ class GlobalState():
     def reset_state(self) -> None:
         for c in range(self.map_width):
             for r in range(self.map_height):
-                self.current_state[(c, r)] = set()
+                self.current_state[(c, r)] = self.rule_set.all_indexes
 
     def get_state_by_coordinate(self, x: int, y: int) -> AvailableOptions:
         return self.current_state.get((x, y), set())
@@ -85,7 +85,7 @@ class GlobalState():
         for (col, row) in self.current_state:
             o = list(self.current_state[(col, row)])
             if len(o) == 1 and o[0] == self.error_tile:
-                self.current_state[(col, row)] = set()
+                self.current_state[(col, row)] = self.rule_set.all_indexes
                 self.dirty = True
 
     def _fix(self, x: int, y: int, choice: TileIndex) -> bool:
@@ -94,6 +94,9 @@ class GlobalState():
         rules = self.rule_set.get_rule_by_index(choice)
         for direction in rules:
             relative = {'Up': (0, -1), 'Down': (0, 1), 'Left': (-1, 0), 'Right': (1, 0)}
+            if not direction in relative.keys():
+                log.warn(f'Unhandled direction {direction}')
+                continue
             xd, yd = relative[direction]
             x2 = x + xd
             y2 = y + yd

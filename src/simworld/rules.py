@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import pathlib
 import json
 from typing import Callable
@@ -20,15 +20,19 @@ class Rules():
     tile_height: int
     error_tile: TileIndex
     tiles: dict[TileIndex, TileDefinition]
+    all_indexes: set[TileIndex] = field(init=False)
 
     def __post_init__(self):
         result = dict()
+        all_indexes = set()
         for d in self.tiles:
             i = d['Index']  # type: ignore
+            all_indexes.add(i)
             result[i] = d
             for dir, items in result[i]['Rules'].items():
                 result[i]['Rules'][dir] = set(items)
         self.tiles = result
+        self.all_indexes = all_indexes
 
     def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
         return self.tiles.get(index, dict())

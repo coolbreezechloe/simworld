@@ -8,7 +8,7 @@ import logging
 import random
 
 from simworld.tileset import TileSet, Coordinate, load_tileset
-from simworld.rules import Rules, load_rules, TileIndex, AvailableOptions
+from simworld.rules import Direction, Rules, load_rules, TileIndex, AvailableOptions
 
 
 log = logging.getLogger(__name__)
@@ -17,6 +17,7 @@ _black = (0, 0, 0)
 _white = (255, 255, 255)
 
 ProbabilitySpace = dict[Coordinate, AvailableOptions]
+Offset = tuple[int, int]
 
 
 @dataclass
@@ -93,8 +94,13 @@ class GlobalState():
         result = False
         rules = self.rule_set.get_rule_by_index(choice)
         for direction in rules:
-            relative = {'Up': (0, -1), 'Down': (0, 1), 'Left': (-1, 0), 'Right': (1, 0)}
-            if not direction in relative.keys():
+            relative: dict[Direction, Offset] = {
+                'Up': (0, -1),
+                'Down': (0, 1),
+                'Left': (-1, 0),
+                'Right': (1, 0)
+            }
+            if not direction in relative:
                 log.warn(f'Unhandled direction {direction}')
                 continue
             xd, yd = relative[direction]

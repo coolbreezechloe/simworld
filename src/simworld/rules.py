@@ -1,13 +1,12 @@
 from dataclasses import dataclass, field
 import pathlib
 import json
-from typing import Callable
 
 
 TileIndex = int
 Direction = str
 AvailableOptions = set[TileIndex]
-TileDefinition = dict
+TileDefinition = dict[Direction, AvailableOptions]
 
 
 @dataclass

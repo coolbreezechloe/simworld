@@ -48,8 +48,8 @@ class GlobalState():
         """Attempt to reduce the entropy to zero (fix) a given choice at a given location (x, y)
 
         This function will propogate the rules for the given choice and if the choice is valid
-        will return True and update the internal state. If the choice breaks a rule or would lead
-        to an invalid state the function returns False and the state is not modified"""
+        will return True and update the internal state. If the choice breaks a rule or would result
+        in an invalid state the function returns False and the state is not modified"""
         self.dirty = True
         original_state = dict(self.current_state)
         result = self._fix(x, y, choice)

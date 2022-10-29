@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import pathlib
 import pygame as pg
-from pygame import Surface
+from pygame.surface import Surface
 from simworld.rules import TileIndex, Rules
 
 Row = int

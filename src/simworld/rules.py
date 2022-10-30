@@ -6,8 +6,13 @@ import json
 TileIndex = int
 Direction = str
 AvailableOptions = set[TileIndex]
-TileDefinition = dict[Direction, AvailableOptions]
 
+@dataclass
+class TileDefinition():
+    """Container for information about a single tile"""
+    name: str
+    index: int
+    rules: dict[Direction, AvailableOptions]
 
 @dataclass
 class Rules():
@@ -27,14 +32,17 @@ class Rules():
         for d in self.tiles:
             i = d['Index']  # type: ignore
             all_indexes.add(i)
-            result[i] = d
-            for dir, items in result[i]['Rules'].items():
-                result[i]['Rules'][dir] = set(items)
+            td = TileDefinition(d['Name'], d['Index'], d['Rules'])
+            result[i] = td
+            for direction, items in td.rules.items():
+                td.rules[direction] = set(items)
+
         self.tiles = result
         self.all_indexes = all_indexes
 
     def get_rule_by_index(self, index: TileIndex) -> dict[Direction, AvailableOptions]:
-        return self.tiles.get(index, dict())
+        result = self.tiles[index]
+        return result.rules
 
 
 def load_rules(rule_file: pathlib.Path) -> Rules:

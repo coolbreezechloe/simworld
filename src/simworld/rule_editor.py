@@ -93,6 +93,13 @@ class GlobalState():
         self.current_state[(x, y)] = {choice}
         result = False
         rules = self.rule_set.get_rule_by_index(choice)
+        if len(rules) == 1 and '*' in rules:
+            rules = {
+                'Up': set(rules['*']),
+                'Down': set(rules['*']),
+                'Left': set(rules['*']),
+                'Right': set(rules['*'])
+            }
         for direction in rules:
             relative: dict[Direction, Offset] = {
                 'Up': (0, -1),
@@ -184,84 +191,87 @@ class RuleEditor():
                     self._handle_keydown(event.key)
                 elif event.type == pygame.MOUSEMOTION:
                     x, y = event.pos
-                    if not self.selected_col == x // self.tile_width or not self.selected_row == y // self.tile_height:
+                    if not self.selected_col == x // self.tile_width:
                         self.selected_col = x // self.tile_width
+                        self.dirty = True
+                    if not self.selected_row == y // self.tile_height:
                         self.selected_row = y // self.tile_height
                         self.dirty = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                    x, y = event.pos
-                    self.down_at = ((x // self.tile_width) + self.view_x, (y // self.tile_height) + self.view_y)
+                    self.down_at = self._get_coordinates(*event.pos)
                 elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
-                    x, y = event.pos
-                    self.up_at = ((x // self.tile_width) + self.view_x, (y // self.tile_height) + self.view_y)
+                    self.up_at = self._get_coordinates(*event.pos)
                     if self.up_at == self.down_at:
-                        self._handle_click(*self.up_at)
+                        self.global_state._fix_at_random(*self.up_at)
                 else:
                     log.debug(f'Unhandled event: {event}')
 
-    def _handle_click(self, x: int, y: int) -> None:
-        self.global_state._fix_at_random(x, y)
+    def _get_coordinates(self, x: int, y: int) -> tuple[int, int]:
+        return (
+            (x // self.tile_width) + self.view_x,
+            (y // self.tile_height) + self.view_y
+        )
+
+    def _key_left(self):
+        if self.view_x > 0:
+            self.view_x = self.view_x - 1
+            self.dirty = True
+
+    def _key_right(self):
+        if self.view_x < self.global_state.map_width - self.view_width:
+            self.view_x = self.view_x + 1
+            self.dirty = True
+
+    def _key_up(self):
+        if self.view_y > 0:
+            self.view_y = self.view_y - 1
+            self.dirty = True
+
+    def _key_down(self):
+        if self.view_y < self.global_state.map_height - self.view_height:
+            self.view_y = self.view_y + 1
+            self.dirty = True
+
+    def _key_origin(self):
+        self.view_x = 0
+        self.view_y = 0
+        self.dirty = True
+
+    def _key_quit(self):
+        self.quit = True
+
+    def _key_refresh(self):
+        self.global_state.reset_state()
+        self.dirty = True
+
+    def _key_finish(self):
+        self.global_state.fill_at_random()
+        self.dirty = True
+
+    def _key_clear(self):
+        self.global_state.clear_errors()
+        self.dirty = True
 
     def _handle_keydown(self, key) -> None:
-        def left():
-            if self.view_x > 0:
-                self.view_x = self.view_x - 1
-                self.dirty = True
-
-        def right():
-            if self.view_x < self.global_state.map_width - self.view_width:
-                self.view_x = self.view_x + 1
-                self.dirty = True
-
-        def up():
-            if self.view_y > 0:
-                self.view_y = self.view_y - 1
-                self.dirty = True
-
-        def down():
-            if self.view_y < self.global_state.map_height - self.view_height:
-                self.view_y = self.view_y + 1
-                self.dirty = True
-
-        def origin():
-            self.view_x = 0
-            self.view_y = 0
-            self.dirty = True
-
-        def quit():
-            self.quit = True
-
-        def refresh():
-            self.global_state.reset_state()
-            self.dirty = True
-
-        def finish():
-            self.global_state.fill_at_random()
-            self.dirty = True
-
-        def clear():
-            self.global_state.clear_errors()
-            self.dirty = True
-
         actions = {
-            pygame.K_LEFT: left,
-            pygame.K_a: left,
-            pygame.K_h: left,
-            pygame.K_j: down,
-            pygame.K_RIGHT: right,
-            pygame.K_d: right,
-            pygame.K_l: right,
-            pygame.K_UP: up,
-            pygame.K_w: up,
-            pygame.K_k: up,
-            pygame.K_DOWN: down,
-            pygame.K_s: down,
-            pygame.K_g: origin,
-            pygame.K_q: quit,
-            pygame.K_F5: refresh,
-            pygame.K_r: refresh,
-            pygame.K_f: finish,
-            pygame.K_c: clear
+            pygame.K_LEFT: self._key_left,
+            pygame.K_a: self._key_left,
+            pygame.K_h: self._key_left,
+            pygame.K_j: self._key_down,
+            pygame.K_RIGHT: self._key_right,
+            pygame.K_d: self._key_right,
+            pygame.K_l: self._key_right,
+            pygame.K_UP: self._key_up,
+            pygame.K_w: self._key_up,
+            pygame.K_k: self._key_up,
+            pygame.K_DOWN: self._key_down,
+            pygame.K_s: self._key_down,
+            pygame.K_g: self._key_origin,
+            pygame.K_q: self._key_quit,
+            pygame.K_F5: self._key_refresh,
+            pygame.K_r: self._key_refresh,
+            pygame.K_f: self._key_finish,
+            pygame.K_c: self._key_clear
         }
 
         if key in actions:

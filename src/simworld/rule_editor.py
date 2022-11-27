@@ -91,7 +91,7 @@ class GlobalState():
 
     def _fix(self, x: int, y: int, choice: TileIndex) -> bool:
         self.current_state[(x, y)] = {choice}
-        result = False
+        result = True
         rules = self.rule_set.get_rule_by_index(choice)
         if len(rules) == 1 and '*' in rules:
             rules = {
@@ -100,13 +100,13 @@ class GlobalState():
                 'Left': set(rules['*']),
                 'Right': set(rules['*'])
             }
+        relative: dict[Direction, Offset] = {
+            'Up': (0, -1),
+            'Down': (0, 1),
+            'Left': (-1, 0),
+            'Right': (1, 0)
+        }
         for direction in rules:
-            relative: dict[Direction, Offset] = {
-                'Up': (0, -1),
-                'Down': (0, 1),
-                'Left': (-1, 0),
-                'Right': (1, 0)
-            }
             if not direction in relative:
                 log.warn(f'Unhandled direction {direction}')
                 continue

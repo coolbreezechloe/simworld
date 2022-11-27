@@ -32,7 +32,7 @@ class Rules():
         for d in self.tiles:
             i = d['Index']  # type: ignore
             all_indexes.add(i)
-            td = TileDefinition(d['Name'], d['Index'], d['Rules'])
+            td = TileDefinition(d['Name'], int(d['Index']), d['Rules']) # type: ignore
             result[i] = td
             for direction, items in td.rules.items():
                 td.rules[direction] = set(items)

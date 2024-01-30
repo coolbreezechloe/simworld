@@ -1,3 +1,4 @@
+# simworld Copyright (C) 2024 Chloe Beelby
 from dataclasses import dataclass, field
 import pathlib
 import pygame

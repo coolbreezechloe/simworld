@@ -1,3 +1,4 @@
+# simworld Copyright (C) 2024 Chloe Beelby
 from email.mime import base
 import pathlib
 import pygame

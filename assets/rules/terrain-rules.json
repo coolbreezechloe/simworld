@@ -5,6 +5,7 @@
     "TileWidth": 32,
     "TileHeight": 32,
     "ErrorTile": 368,
+    "Directions": ["Up", "Down", "Left", "Right"],
     "Tiles": [
         {
             "Name": "Top Left Corner",

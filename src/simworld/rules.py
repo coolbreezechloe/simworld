@@ -30,14 +30,13 @@ class Rules():
     def __post_init__(self):
         result = dict()
         all_indexes = set()
-        for d in self.tiles:
-            i = d['Index']  # type: ignore
-            all_indexes.add(i)
-            td = TileDefinition(d['Name'], int(d['Index']), d['Rules']) # type: ignore
-            result[i] = td
+        for td in self.tiles:
+            index = int(td['Index']) # type: ignore
+            all_indexes.add(index)
+            td = TileDefinition(td['Name'], td['Index'], td['Rules']) # type: ignore
             for direction, items in td.rules.items():
                 td.rules[direction] = set(items)
-
+            result[index] = td
         self.tiles = result
         self.all_indexes = all_indexes
 

@@ -7,20 +7,19 @@ from simworld.rules import TileIndex, Rules
 
 Row = int
 Column = int
-Tile = Surface
 Coordinate = tuple[Column, Row]
 
 @dataclass
 class TileSet():
     """This class is a handy tool for dealing with tilesets in 2D games"""
-    tiles: dict[Coordinate, Tile]
+    tiles: dict[Coordinate, Surface]
     tile_width: int
     tile_height: int
     cols: int
     rows: int
     name: str
 
-    def get_tile_by_index(self, index: TileIndex) -> Tile:
+    def get_tile_by_index(self, index: TileIndex) -> Surface:
         """Get a tile from the complete set of tiles using a 1-based index
 
         For example if the source file contained 100 tiles (perhaps arranged

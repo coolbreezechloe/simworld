@@ -147,8 +147,8 @@ class GlobalState():
 class RuleEditor():
     def __init__(self, tileset: TileSet, rule_set: Rules):
         self.tileset = tileset
-        self.width = 250
-        self.height = 250
+        self.width = 800
+        self.height = 600
         self.rule_set = rule_set
         self._setup_pygame()
         self._setup_state()
@@ -164,7 +164,7 @@ class RuleEditor():
         self.surface = surface
 
     def _setup_state(self):
-        self.global_state = GlobalState(map_width=20, map_height=20, error_tile=368, rule_set=self.rule_set)
+        self.global_state = GlobalState(map_width=24, map_height=20, error_tile=368, rule_set=self.rule_set)
         self.global_state.reset_state()
         self.view_x = 0
         self.view_y = 0
@@ -192,11 +192,11 @@ class RuleEditor():
                     self._handle_keydown(event.key)
                 elif event.type == pygame.MOUSEMOTION:
                     x, y = event.pos
-                    if not self.selected_col == x // self.tile_width:
-                        self.selected_col = x // self.tile_width
+                    if not self.selected_col == (x // self.tile_width):
+                        self.selected_col = (x // self.tile_width)
                         self.dirty = True
-                    if not self.selected_row == y // self.tile_height:
-                        self.selected_row = y // self.tile_height
+                    if not self.selected_row == (y // self.tile_height):
+                        self.selected_row = (y // self.tile_height)
                         self.dirty = True
                 elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     self.down_at = self._get_coordinates(*event.pos)
@@ -272,12 +272,23 @@ class RuleEditor():
             pygame.K_F5: self._key_refresh,
             pygame.K_r: self._key_refresh,
             pygame.K_f: self._key_finish,
-            pygame.K_c: self._key_clear
+            pygame.K_c: self._key_clear,
+            pygame.K_t: self._make_rules
         }
 
         if key in actions:
             handler = actions[key]
             handler()
+
+    def _make_rules(self) -> None:
+        """Infer a ruleset from the pixels in the tiles themselves
+        
+        The purpose of this function is to infer a ruleset automatically from the pixels in the
+        tiles themselves under the assumption that the colors on the edges must match in order for
+        the tiles to be allowed to touch. Currently must be 100% match, but that could be factored
+        into an input variable.
+        """
+        pass
 
     def _update_screen(self) -> None:
         self.surface.fill(_black)

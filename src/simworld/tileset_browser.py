@@ -57,48 +57,71 @@ class TilesetBrowser():
                     self.quit = True
                     break
                 elif event.type == pygame.KEYDOWN:
-                    self._handle_keydown(event.key)
-
-    def _handle_keydown(self, key) -> None:
-        if key == pygame.K_LEFT or key == pygame.K_a:
-            if self.view_x > 0:
-                self.view_x = self.view_x - 1
-        elif key == pygame.K_RIGHT or key == pygame.K_d:
-            if self.view_x < self.tileset.cols - self.view_width:
-                self.view_x = self.view_x + 1
-        elif key == pygame.K_UP or key == pygame.K_w:
-            if self.view_y > 0:
-                self.view_y = self.view_y - 1
-        elif key == pygame.K_DOWN or key == pygame.K_s:
-            if self.view_y < self.tileset.rows - self.view_height:
-                self.view_y = self.view_y + 1
-        elif key == pygame.K_g:
-            self.view_x = 0
-            self.view_y = 0
-            self.selected_row = 0
-            self.selected_col = 0
-        elif key == pygame.K_j:
-            if self.selected_row < self.view_height - 1:
-                self.selected_row = self.selected_row + 1
-            elif self.selected_row == self.view_height - 1 and self.view_y < self.tileset.rows - self.view_height:
-                self.view_y = self.view_y + 1
-        elif key == pygame.K_k:
+                    if not event.unicode:
+                        self._handle_keydown(event.key)
+                elif event.type == pygame.TEXTINPUT:
+                    self._handle_textinput(event.text)
+    
+    def _handle_textinput(self, text):
+        if text == 'k':
             if self.selected_row > 0:
                 self.selected_row = self.selected_row - 1
             elif self.selected_row == 0 and self.view_y > 0:
                 self.view_y = self.view_y - 1
-        elif key == pygame.K_l:
+        elif text == 'q':
+            self.quit = True
+        elif text == 'g':
+            self.view_x = 0
+            self.view_y = 0
+            self.selected_row = 0
+            self.selected_col = 0
+        elif text == 'j':
+            if self.selected_row < self.view_height - 1:
+                self.selected_row = self.selected_row + 1
+            elif self.selected_row == self.view_height - 1 and self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
+        elif text == 'k':
+            if self.selected_row > 0:
+                self.selected_row = self.selected_row - 1
+            elif self.selected_row == 0 and self.view_y > 0:
+                self.view_y = self.view_y - 1
+        elif text == 'l':
             if self.selected_col < self.view_width - 1:
                 self.selected_col = self.selected_col + 1
             elif self.selected_col == self.view_width - 1 and self.view_x < self.tileset.cols - self.view_width:
                 self.view_x = self.view_x + 1
-        elif key == pygame.K_h:
+        elif text == 'h':
             if self.selected_col > 0:
                 self.selected_col = self.selected_col - 1
             elif self.selected_col == 0 and self.view_x > 0:
                 self.view_x = self.view_x - 1
-        elif key == pygame.K_q:
-            self.quit = True
+        elif text == 'a':
+            if self.view_x > 0:
+                self.view_x = self.view_x - 1
+        elif text == 'd':
+            if self.view_x < self.tileset.cols - self.view_width:
+                self.view_x = self.view_x + 1
+        elif text == 'w':
+            if self.view_y > 0:
+                self.view_y = self.view_y - 1
+        elif text == 's':
+            if self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
+        
+
+    def _handle_keydown(self, key) -> None:
+        if key == pygame.K_LEFT:
+            if self.view_x > 0:
+                self.view_x = self.view_x - 1
+        elif key == pygame.K_RIGHT:
+            if self.view_x < self.tileset.cols - self.view_width:
+                self.view_x = self.view_x + 1
+        elif key == pygame.K_UP:
+            if self.view_y > 0:
+                self.view_y = self.view_y - 1
+        elif key == pygame.K_DOWN:
+            if self.view_y < self.tileset.rows - self.view_height:
+                self.view_y = self.view_y + 1
 
     def _update_screen(self) -> None:
         self.surface.fill(_black)
@@ -193,6 +216,7 @@ if __name__ == '__main__':  # pragma: nocover
     logging.basicConfig(
         level=logging.DEBUG,
         style='{',
-        format='{asctime}:{levelname}:{filename}:{lineno}:{message}'
+        format='{asctime}|{levelname}|{filename}:{lineno}|{message}',
+        force=True
     )
     show_all()

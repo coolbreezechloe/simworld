@@ -55,7 +55,7 @@ def load_rules(rule_file: pathlib.Path) -> Rules:
     tile_width = rule_spec['TileWidth']
     tile_height = rule_spec['TileHeight']
     error_tile = rule_spec['ErrorTile']
-    tiles = rule_spec['Tiles']
+    tiles = {}
 
     rules = Rules(name, author, file_name, tile_width, tile_height, error_tile, tiles)
     return rules

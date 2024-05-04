@@ -1,15 +1,16 @@
 # simworld Copyright (C) 2024 Chloe Beelby
 from dataclasses import dataclass, field
 import pathlib
+from turtle import left
 import pygame
 import pygame.freetype
 from pygame.time import Clock
-
+import json
 import logging
 import random
 
 from simworld.tileset import TileSet, Coordinate, load_tileset
-from simworld.rules import Direction, Rules, load_rules, TileIndex, AvailableOptions
+from simworld.rules import Direction, Rules, TileDefinition, load_rules, TileIndex, AvailableOptions
 
 
 log = logging.getLogger(__name__)
@@ -144,7 +145,7 @@ class GlobalState():
         self.current_state[(x, y)] = set([self.error_tile])
 
 
-class RuleEditor():
+class RuleSimulator():
     def __init__(self, tileset: TileSet, rule_set: Rules):
         self.tileset = tileset
         self.width = 800
@@ -280,6 +281,26 @@ class RuleEditor():
             handler = actions[key]
             handler()
 
+    def _get_edges(self, surface):
+        width, height = surface.get_size()
+        top_edge = []
+        bottom_edge = []
+        left_edge = []
+        right_edge = []
+        for x in range(width):
+            color = surface.get_at((x, 0))
+            top_edge.append(f"({color.r},{color.g},{color.b},{color.a})")
+            color = surface.get_at((x, height - 1))
+            bottom_edge.append(f"({color.r},{color.g},{color.b},{color.a})")
+
+        for y in range(height):
+            color = surface.get_at((0, y))
+            left_edge.append(f"({color.r},{color.g},{color.b},{color.a})")
+            color = surface.get_at((width - 1, y))
+            right_edge.append(f"({color.r},{color.g},{color.b},{color.a})")
+
+        return top_edge, bottom_edge, left_edge, right_edge
+
     def _make_rules(self) -> None:
         """Infer a ruleset from the pixels in the tiles themselves
         
@@ -288,7 +309,64 @@ class RuleEditor():
         the tiles to be allowed to touch. Currently must be 100% match, but that could be factored
         into an input variable.
         """
-        pass
+        unique_edges = {}
+        for (x, y), surface in self.tileset.tiles.items():
+            tile_index = (y * self.tileset.cols) + (x + 1)
+
+            top_edge, bottom_edge, left_edge, right_edge = self._get_edges(surface)
+
+            id_str = ('L', str.join(', ', left_edge))
+            tiles = unique_edges.setdefault(id_str, set())
+            tiles.update((tile_index,))
+            unique_edges[id_str] = tiles
+
+            id_str = ('R', str.join(', ', right_edge))
+            tiles = unique_edges.setdefault(id_str, set())
+            tiles.update((tile_index,))
+            unique_edges[id_str] = tiles
+
+            id_str = ('T', str.join(', ', top_edge))
+            tiles = unique_edges.setdefault(id_str, set())
+            tiles.update((tile_index,))
+            unique_edges[id_str] = tiles
+
+            id_str = ('B', str.join(', ', bottom_edge))
+            tiles = unique_edges.setdefault(id_str, set())
+            tiles.update((tile_index,))
+            unique_edges[id_str] = tiles
+
+        result = []
+        for (x, y), surface in self.tileset.tiles.items():
+
+            tile_index = (y * self.tileset.rows) + (x + 1)
+
+            surface = self.tileset.get_tile_by_index(tile_index)
+
+            top_edge, bottom_edge, left_edge, right_edge = self._get_edges(surface)
+
+            id_str = ('B', str.join(', ', top_edge))
+            up_rules = unique_edges.get(id_str, set())
+
+            id_str = ('T', str.join(', ', bottom_edge))
+            down_rules = unique_edges.get(id_str, set())
+
+            id_str = ('R', str.join(', ', left_edge))
+            left_rules = unique_edges.get(id_str, set())
+
+            id_str = ('L', str.join(', ', right_edge))
+            right_rules = unique_edges.get(id_str, set())
+
+            rules = {
+                'Up': up_rules,
+                'Down': down_rules,
+                'Left': left_rules,
+                'Right': right_rules
+            }
+            tile_definition = TileDefinition(f"Tile-Index:{tile_index}", tile_index, rules)
+            
+            self.global_state.rule_set.tiles[tile_index] = tile_definition
+        
+        log.debug(f"Tiles: {json.dumps(result)}")
 
     def _update_screen(self) -> None:
         self.surface.fill(_black)
@@ -335,7 +413,7 @@ def show_all():
     for f in (base_folder / "rules").glob('*.json'):
         rules = load_rules(f)
         tileset = load_tileset(base_folder / "tilesets" / rules.file_name, rules)
-        t = RuleEditor(tileset, rules)
+        t = RuleSimulator(tileset, rules)
         t.run()
 
 
@@ -343,6 +421,6 @@ if __name__ == '__main__':  # pragma: nocover
     logging.basicConfig(
         level=logging.DEBUG,
         style='{',
-        format='{asctime}:{levelname}:{filename}:{lineno}:{message}'
+        format='{asctime}|{levelname}|{filename}|{lineno}|{message}'
     )
     show_all()

@@ -8,7 +8,7 @@
             "name": "SimWorld : Rule Editor",
             "type": "python",
             "request": "launch",
-            "module": "simworld.rule_editor",
+            "module": "simworld.rule_simulator",
             "justMyCode": true
         },
         {

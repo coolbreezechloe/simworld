@@ -4,5 +4,117 @@
     "FileName": "terrain-32x32.png",
     "TileWidth": 32,
     "TileHeight": 32,
-    "ErrorTile": 368
+    "ErrorTile": 365,
+    "Tiles": [
+        {
+            "Index": 65,
+            "Name": "top-left",
+            "Rules": {
+                "Up": [0],
+                "Down": [97, 129],
+                "Right": [66, 67],
+                "Left": [0]
+            }
+        },
+        {
+            "Index": 97,
+            "Name": "middle-left",
+            "Rules": {
+                "Up": [97, 65],
+                "Down": [97, 129],
+                "Right": [98, 99],
+                "Left": [0]
+            }
+        },
+        {
+            "Index": 129,
+            "Name": "bottom-left",
+            "Rules": {
+                "Up": [97, 65],
+                "Down": [0],
+                "Right": [130, 131],
+                "Left": [0]
+            }
+        },
+        {
+            "Index": 66,
+            "Name": "top-middle",
+            "Rules": {
+                "Up": [0],
+                "Down": [98, 130],
+                "Right": [67, 66],
+                "Left": [65, 66]
+            }
+        },
+        {
+            "Index": 98,
+            "Name": "center",
+            "Rules": {
+                "Up": [66, 98],
+                "Down": [130, 98],
+                "Right": [99, 98],
+                "Left": [97, 98]
+            }
+        },
+        {
+            "Index": 130,
+            "Name": "bottom-middle",
+            "Rules": {
+                "Up": [98, 66],
+                "Down": [0],
+                "Right": [130, 131],
+                "Left": [129, 130]
+            }
+        },
+        {
+            "Index": 67,
+            "Name": "top-right",
+            "Rules": {
+                "Up": [0],
+                "Down": [99, 131],
+                "Right": [0],
+                "Left": [66, 65]
+            }
+        },
+        {
+            "Index": 99,
+            "Name": "middle-right",
+            "Rules": {
+                "Up": [67, 99],
+                "Down": [131, 99],
+                "Right": [0],
+                "Left": [97, 98]
+            }
+        },
+        {
+            "Index": 131,
+            "Name": "bottom-right",
+            "Rules": {
+                "Up": [67, 99],
+                "Down": [0],
+                "Right": [0],
+                "Left": [130, 129]
+            }
+        },
+        {
+            "Index": 1,
+            "Name": "rocks",
+            "Rules": {
+                "Up": [0],
+                "Down": [0],
+                "Right": [0],
+                "Left": [0]
+            }
+        },
+        {
+            "Index": 33,
+            "Name": "rock",
+            "Rules": {
+                "Up": [0],
+                "Down": [0],
+                "Right": [0],
+                "Left": [0]
+            }
+        }
+    ]
 }

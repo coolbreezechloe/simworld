@@ -7,7 +7,7 @@ from pygame.time import Clock
 import logging
 
 from simworld.tileset import Coordinate, TileSet, load_tileset
-from simworld.rules import load_rules
+from simworld.rules import load_rules_from_json
 
 log = logging.getLogger(__name__)
 
@@ -38,8 +38,8 @@ class TilesetBrowser():
         self.view_x_delta = 0
         self.view_y = 0
         self.view_y_delta = 0
-        self.view_width = 10
-        self.view_height = 10
+        self.view_width = 5
+        self.view_height = 5
         self.selected_tile: Coordinate = (0, 0)
         self.selected_col = self.view_width // 2
         self.selected_row = self.view_height // 2
@@ -78,7 +78,8 @@ class TilesetBrowser():
         elif text == 'j':
             if self.selected_row < self.view_height - 1:
                 self.selected_row = self.selected_row + 1
-            elif self.selected_row == self.view_height - 1 and self.view_y < self.tileset.rows - self.view_height:
+            elif (self.selected_row == self.view_height - 1 and
+                  self.view_y < self.tileset.rows - self.view_height):
                 self.view_y = self.view_y + 1
         elif text == 'k':
             if self.selected_row > 0:
@@ -88,7 +89,8 @@ class TilesetBrowser():
         elif text == 'l':
             if self.selected_col < self.view_width - 1:
                 self.selected_col = self.selected_col + 1
-            elif self.selected_col == self.view_width - 1 and self.view_x < self.tileset.cols - self.view_width:
+            elif (self.selected_col == self.view_width - 1 and
+                  self.view_x < self.tileset.cols - self.view_width):
                 self.view_x = self.view_x + 1
         elif text == 'h':
             if self.selected_col > 0:
@@ -179,6 +181,14 @@ class TilesetBrowser():
         surface.blit(tile2, (0, 0))
         pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
         return surface
+    
+    def _get_quarter_surface(self) -> pygame.Surface:
+        surface = pygame.Surface((self.tile_width*4, self.tile_height*4))
+        tile = self.tileset.tiles[self.selected_tile]
+        tile14 = pygame.transform.scale(tile, (self.tile_width*0.25, self.tile_height*0.25))
+        surface.blit(tile14, (0, 0))
+        pygame.draw.rect(surface, _white, (0, 0, surface.get_width(), surface.get_height()), width=1)
+        return surface
 
     def _get_quad_surface(self) -> pygame.Surface:
         surface = pygame.Surface((self.tile_width*4, self.tile_height*4))
@@ -205,10 +215,10 @@ class TilesetBrowser():
 
 
 def show_all():
-    base_folder = pathlib.Path(__file__).parent.parent.parent
-    for r in pathlib.Path(base_folder / "assets" / "rules").glob('*-rules.json'):
-        rules = load_rules(r)
-        tileset = load_tileset(base_folder / "assets" / "tilesets" / rules.file_name, rules)
+    base_folder = pathlib.Path(__file__).parent.parent.parent / "assets"
+    for r in pathlib.Path(base_folder / "rules").glob('*-rules.json'):
+        rules = load_rules_from_json(r)
+        tileset = load_tileset(base_folder / "tilesets" / rules.file_name, rules)
         TilesetBrowser(tileset).run()
 
 

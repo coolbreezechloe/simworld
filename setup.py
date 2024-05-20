@@ -42,7 +42,7 @@ setup(
     author_email="CoolBreezeChloe@gmail.com",
     package_dir={"": "src"},
     packages=find_packages(where="src"),
-    python_requires=">=3.7, <4",
+    python_requires=">=3.10, <4",
     install_requires=["pygame"],
     extras_require={
         "dev": ["coverage"],

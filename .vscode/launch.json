@@ -6,14 +6,14 @@
     "configurations": [
         {
             "name": "SimWorld : Rule Editor",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "simworld.rule_simulator",
             "justMyCode": true
         },
         {
             "name": "SimWorld : Tile Set Browser",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "simworld.tileset_browser",
             "justMyCode": true
